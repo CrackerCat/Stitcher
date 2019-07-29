@@ -1,0 +1,46 @@
+buildscript {
+    repositories {
+        jcenter()
+
+        maven { url = 'http://files.minecraftforge.net/maven' }
+    }
+
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "com.github.johnrengelman.shadow"
+
+version = "mc${minecraft_version}-${version}"
+archivesBaseName = "stitcher-forge"
+
+shadowJar {
+    relocate 'com.eclipsesource.json', 'me.jellysquid.stitcher.lib.json'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.eclipsesource.minimal-json:minimal-json:0.9.5"
+
+    compile project(":core")
+}
+
+minecraft {
+    version = "${minecraft_version}-${forge_version}"
+    runDir = "run"
+
+    mappings = forge_mappings
+
+    clientJvmArgs += "-Dfml.coreMods.load=me.jellysquid.mods.stitcher.bootstrap.StitcherFMLLoadingPlugin"
+    serverJvmArgs += "-Dfml.coreMods.load=me.jellysquid.mods.stitcher.bootstrap.StitcherFMLLoadingPlugin"
+
+    makeObfSourceJar = false
+}
+
+shadowJar.dependsOn reobfJar
