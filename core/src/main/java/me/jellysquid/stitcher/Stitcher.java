@@ -24,44 +24,31 @@ public class Stitcher {
 
     private List<Plugin> plugins = Collections.emptyList();
 
-    private Stitcher(Environment env) {
-        this.environment = env;
-
+    private Stitcher(Environment environment) {
+        this.environment = environment;
         this.patcher = new EnvironmentPatcher(this.environment, StitcherEnvironment.isDebuggingEnabled());
     }
 
     /**
-     * @return The global instance of {@link Stitcher}.
-     * @throws IllegalStateException If an instance of {@link Stitcher} has not yet been initialized
+     * Initializes the global {@link Stitcher} instance. If an instance has already been created, an exception
+     * will be thrown.
      */
-    public static Stitcher instance() {
-        if (instance == null) {
-            throw new IllegalStateException("Stitcher instance not initialized yet");
+    public static Stitcher init(Environment environment) {
+        if (instance != null) {
+            throw new IllegalStateException("Stitcher is already initialized!");
         }
 
-        return instance;
-    }
-
-    /**
-     * Initializes the global {@link Stitcher} instance. If an instance has already been created, it will instead return
-     * the current instance.
-     */
-    public static Stitcher init(Environment env) {
-        if (instance == null) {
-            instance = new Stitcher(env);
-            instance.setup();
-        }
+        instance = new Stitcher(environment);
+        instance.setup();
 
         return instance;
     }
 
     /**
      * Performs plugin discovery and initializes any found plugins. This logic has been moved outside of the constructor
-     * as {@link Stitcher#instance()} may be called during construction but before setup.
+     * as {@link Stitcher#init(Environment)} may be called during construction but before setup.
      */
     private void setup() {
-        this.environment.setup(this);
-
         this.setupPlugins();
         this.setupTransformers();
     }

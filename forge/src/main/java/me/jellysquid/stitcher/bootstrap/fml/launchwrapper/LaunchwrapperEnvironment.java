@@ -31,11 +31,6 @@ public class LaunchwrapperEnvironment implements Environment {
     }
 
     @Override
-    public void setup(Stitcher stitcher) {
-        Launch.classLoader.registerTransformer(LaunchwrapperTransformer.class.getName());
-    }
-
-    @Override
     public Stream<PluginCandidate> discoverCandidatePlugins() throws IOException {
         Stream<PluginResourceProvider> jars = Files.walk(this.home.resolve("mods"))
                 .filter(path -> path.endsWith(".jar"))

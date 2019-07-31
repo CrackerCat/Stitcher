@@ -14,21 +14,33 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "com.github.johnrengelman.shadow"
 
-version = "mc${minecraft_version}-${version}"
+version = "${minecraft_version}-${version}"
 archivesBaseName = "stitcher-forge"
 
 shadowJar {
     relocate 'com.eclipsesource.json', 'me.jellysquid.stitcher.lib.json'
+
+    dependencies {
+        exclude(dependency('org.ow2.asm:asm-debug-all:.*'))
+        exclude(dependency('org.apache.logging.log4j:.*'))
+    }
+
+    classifier = "universal"
 }
 
 repositories {
     mavenCentral()
 }
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
 dependencies {
     compile "com.eclipsesource.minimal-json:minimal-json:0.9.5"
 
-    compile project(":core")
+    shade project(":core")
 }
 
 minecraft {
@@ -43,4 +55,10 @@ minecraft {
     makeObfSourceJar = false
 }
 
+jar {
+    classifier = "universal"
+}
+
 shadowJar.dependsOn reobfJar
+
+build.dependsOn shadowJar
