@@ -62,4 +62,8 @@ public class NeedleMatcher {
 
         return filtered;
     }
+
+    public NeedleFactory getNeedleFactory() {
+        return this.matcher;
+    }
 }
