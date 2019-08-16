@@ -2,7 +2,7 @@ package me.jellysquid.stitcher;
 
 import me.jellysquid.stitcher.environment.Environment;
 import me.jellysquid.stitcher.environment.EnvironmentPatcher;
-import me.jellysquid.stitcher.patcher.ClassPatcher;
+import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.plugin.Plugin;
 import me.jellysquid.stitcher.plugin.PluginLoader;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
@@ -74,7 +74,7 @@ public class Stitcher {
     }
 
     private void loadPlugin(Plugin plugin) {
-        List<ClassPatcher> patchers = new ArrayList<>();
+        List<ClassTransformer> patchers = new ArrayList<>();
 
         long start = System.currentTimeMillis();
 
@@ -87,7 +87,7 @@ public class Stitcher {
             patchers.addAll(this.patcher.registerTransformerGroup(plugin, group));
         }
 
-        LOGGER.debug("Loaded {} class patchers from plugin {} in {}ms", patchers.size(), plugin, System.currentTimeMillis() - start);
+        LOGGER.debug("Loaded {} transformers from plugin {} in {}ms", patchers.size(), plugin, System.currentTimeMillis() - start);
     }
 
     public EnvironmentPatcher getPatcher() {

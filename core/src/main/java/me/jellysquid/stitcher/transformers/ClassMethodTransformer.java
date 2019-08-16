@@ -1,6 +1,7 @@
 package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.patcher.ClassTransformer;
+import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -8,8 +9,8 @@ import org.objectweb.asm.tree.MethodNode;
 public class ClassMethodTransformer extends ClassTransformer {
     private final MethodNode method;
 
-    public ClassMethodTransformer(MethodNode method, int priority) {
-        super(priority);
+    public ClassMethodTransformer(PluginResource source, MethodNode method, int priority) {
+        super(source, priority);
 
         this.method = method;
     }

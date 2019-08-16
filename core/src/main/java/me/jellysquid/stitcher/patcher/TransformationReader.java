@@ -19,21 +19,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ClassPatcherBuilder {
+public class TransformationReader {
     private final Map<String, ClassTransformerFactory> methodTransformationTypes = new HashMap<>();
 
-    public ClassPatcherBuilder() {
-        this.registerAnnotationConsumer(Type.getDescriptor(Overwrite.class), new MethodOverwriteTransformer.Builder());
-        this.registerAnnotationConsumer(Type.getDescriptor(Inject.class), new MethodInjectionTransformer.Builder());
-        this.registerAnnotationConsumer(Type.getDescriptor(Redirect.class), new MethodRedirectTransformer.Builder());
-        this.registerAnnotationConsumer(Type.getDescriptor(ModifyVariable.class), new MethodVariableTransformer.Builder());
+    public TransformationReader() {
+        this.registerType(Type.getDescriptor(Overwrite.class), new MethodOverwriteTransformer.Builder());
+        this.registerType(Type.getDescriptor(Inject.class), new MethodInjectionTransformer.Builder());
+        this.registerType(Type.getDescriptor(Redirect.class), new MethodRedirectTransformer.Builder());
+        this.registerType(Type.getDescriptor(ModifyVariable.class), new MethodVariableTransformer.Builder());
     }
 
-    private void registerAnnotationConsumer(String type, ClassTransformerFactory factory) {
+    private void registerType(String type, ClassTransformerFactory factory) {
         this.methodTransformationTypes.put(type, factory);
     }
 
-    public ClassPatcher createClassPatcher(PluginResource resource) {
+    public TransformationData readTransformations(PluginResource resource) {
         byte[] classBytes;
 
         try {
@@ -48,7 +48,7 @@ public class ClassPatcherBuilder {
         classReader.accept(classNode, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
 
         try {
-            return this.buildClassPatcher(resource, classNode);
+            return this.readTransformations(resource, classNode);
         } catch (Exception e) {
             throw new RuntimeException("Could not build class patcher from class " + resource.getPath(), e);
         }
@@ -56,7 +56,7 @@ public class ClassPatcherBuilder {
 
     private static final String TRANSFORM_MARKER = Type.getDescriptor(Transform.class);
 
-    private ClassPatcher buildClassPatcher(PluginResource resource, ClassNode classNode) {
+    private TransformationData readTransformations(PluginResource source, ClassNode classNode) {
         Type target = null;
         int priority = 0;
 
@@ -80,12 +80,12 @@ public class ClassPatcherBuilder {
         List<ClassTransformer> transformers = new ArrayList<>();
 
         for (String interfaceName : classNode.interfaces) {
-            transformers.add(new ClassInterfaceTransformer(interfaceName, priority));
+            transformers.add(new ClassInterfaceTransformer(source, interfaceName, priority));
         }
 
         for (FieldNode fieldNode : classNode.fields) {
             if (!remapper.registerFieldMapping(fieldNode)) {
-                transformers.add(new ClassFieldTransformer(fieldNode, priority));
+                transformers.add(new ClassFieldTransformer(source, fieldNode, priority));
             }
         }
 
@@ -94,12 +94,12 @@ public class ClassPatcherBuilder {
                 continue;
             }
 
-            ClassTransformer transformer = this.buildMethodTransformer(methodNode);
+            ClassTransformer transformer = this.buildMethodTransformer(source, methodNode);
 
             if (transformer != null) {
                 transformers.add(transformer);
             } else if (!remapper.registerMethodMapping(methodNode)) {
-                transformers.add(new ClassMethodTransformer(methodNode, priority));
+                transformers.add(new ClassMethodTransformer(source, methodNode, priority));
             }
         }
 
@@ -109,10 +109,10 @@ public class ClassPatcherBuilder {
             return null;
         }
 
-        return new ClassPatcher(resource, target, transformers);
+        return new TransformationData(target, transformers);
     }
 
-    private ClassTransformer buildMethodTransformer(MethodNode methodNode) {
+    private ClassTransformer buildMethodTransformer(PluginResource source, MethodNode methodNode) {
         List<AnnotationNode> annotations = methodNode.invisibleAnnotations;
 
         if (annotations == null || annotations.isEmpty()) {
@@ -126,7 +126,7 @@ public class ClassPatcherBuilder {
 
             if (factory != null) {
                 try {
-                    methodTransformer = factory.build(methodNode, annotation);
+                    methodTransformer = factory.build(source, methodNode, annotation);
                 } catch (TransformerBuildException e) {
                     throw new RuntimeException("Failed to build method transformer", e);
                 }
@@ -137,5 +137,4 @@ public class ClassPatcherBuilder {
 
         return methodTransformer;
     }
-
 }

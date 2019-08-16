@@ -2,7 +2,9 @@ package me.jellysquid.stitcher.environment;
 
 import me.jellysquid.stitcher.Stitcher;
 import me.jellysquid.stitcher.patcher.ClassPatcher;
-import me.jellysquid.stitcher.patcher.ClassPatcherBuilder;
+import me.jellysquid.stitcher.patcher.ClassTransformer;
+import me.jellysquid.stitcher.patcher.TransformationData;
+import me.jellysquid.stitcher.patcher.TransformationReader;
 import me.jellysquid.stitcher.plugin.Plugin;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
@@ -10,6 +12,7 @@ import me.jellysquid.stitcher.util.FilesHelper;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.FileOutputStream;
@@ -23,11 +26,11 @@ import java.util.concurrent.Executors;
 public class EnvironmentPatcher {
     private final ExecutorService executor;
 
-    private final HashMap<String, List<ClassPatcher>> transformersByClass = new HashMap<>();
+    private final HashMap<String, ClassPatcher> patchersByClass = new HashMap<>();
 
-    private final List<ClassPatcher> transformers = new ArrayList<>();
+    private final List<ClassTransformer> transformers = new ArrayList<>();
 
-    private final ClassPatcherBuilder parser = new ClassPatcherBuilder();
+    private final TransformationReader parser = new TransformationReader();
 
     private final Path debugDirectory;
 
@@ -58,9 +61,9 @@ public class EnvironmentPatcher {
     }
 
     public final byte[] transform(String name, byte[] bytes) {
-        List<ClassPatcher> transformers = this.transformersByClass.get(name);
+        ClassPatcher patcher = this.patchersByClass.get(name);
 
-        if (transformers == null || transformers.isEmpty()) {
+        if (patcher == null) {
             return bytes;
         }
 
@@ -69,14 +72,12 @@ public class EnvironmentPatcher {
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(classNode, ClassReader.SKIP_FRAMES); // We always re-calculate frames, so it's unnecessary to waste CPU time decoding them
 
-        boolean modified = false;
+        final boolean modified;
 
-        for (ClassPatcher patcher : transformers) {
-            try {
-                modified = patcher.transformClass(classNode);
-            } catch (TransformerException e) {
-                throw new RuntimeException("Failed to transform class using transformer " + patcher, e);
-            }
+        try {
+            modified = patcher.transformClass(classNode);
+        } catch (TransformerException e) {
+            throw new RuntimeException("Failed to transform class using transformer " + patcher, e);
         }
 
         if (modified) {
@@ -111,8 +112,8 @@ public class EnvironmentPatcher {
         }
     }
 
-    public List<ClassPatcher> registerTransformerGroup(Plugin plugin, PluginGroupConfig config) {
-        List<ClassPatcher> patchers = new ArrayList<>();
+    public List<ClassTransformer> registerTransformerGroup(Plugin plugin, PluginGroupConfig config) {
+        List<ClassTransformer> transformers = new ArrayList<>();
 
         for (String transformer : config.getTransformers()) {
             String qualifiedName = config.getPackageRoot() + "." + transformer;
@@ -120,44 +121,55 @@ public class EnvironmentPatcher {
 
             PluginResource resource = plugin.getResource(bytecodePath);
 
-            ClassPatcher patcher = this.loadClassPatcherFromPlugin(resource);
-
-            patchers.add(patcher);
+            transformers.addAll(this.loadClassPatcherFromPlugin(resource));
         }
 
-        return patchers;
+        return transformers;
     }
 
-    private ClassPatcher loadClassPatcherFromPlugin(PluginResource resource) {
+    private List<ClassTransformer> loadClassPatcherFromPlugin(PluginResource resource) {
         long start = System.currentTimeMillis();
 
-        ClassPatcher patcher = this.parser.createClassPatcher(resource);
+        TransformationData data = this.parser.readTransformations(resource);
 
-        Stitcher.LOGGER.debug("Loaded class patcher from bytecode {} in {} ({}ms)", resource.getPath(),
+        Stitcher.LOGGER.debug("Loaded transformations from {} in {} ({}ms)", resource.getPath(),
                 resource.getPlugin(), System.currentTimeMillis() - start);
 
         try {
-            this.addPatcher(patcher);
+            ClassPatcher patcher = this.getPatcher(data.getTarget());
+            patcher.addTransformers(data.getTransformers());
         } catch (Exception e) {
             throw new RuntimeException("Could not add class patcher to environment: " + resource.getPath(), e);
+        }
+
+        this.transformers.addAll(data.getTransformers());
+
+        return data.getTransformers();
+    }
+
+    private ClassPatcher getPatcher(Type type) {
+        ClassPatcher patcher = this.patchersByClass.get(type.getClassName());
+
+        if (patcher == null) {
+            patcher = this.createPatcher(type);
         }
 
         return patcher;
     }
 
-    private void addPatcher(ClassPatcher patcher) {
-        String target = patcher.getTarget().getClassName();
+    private ClassPatcher createPatcher(Type type) {
+        ClassPatcher patcher = new ClassPatcher(type);
 
-        if (this.environment.isClassLoaded(target)) {
-            throw new RuntimeException("The class " + target + " has already been loaded in this environment");
+        if (this.environment.isClassLoaded(type.getClassName())) {
+            throw new RuntimeException("The class " + type.getClassName() + " has already been loaded in this environment");
         }
 
-        this.transformersByClass.computeIfAbsent(target, (key) -> new ArrayList<>())
-                .add(patcher);
-        this.transformers.add(patcher);
+        this.patchersByClass.put(type.getClassName(), patcher);
+
+        return patcher;
     }
 
-    public Collection<ClassPatcher> getRegisteredPatchers() {
+    public Collection<ClassTransformer> getRegisteredPatchers() {
         return Collections.unmodifiableCollection(this.transformers);
     }
 }

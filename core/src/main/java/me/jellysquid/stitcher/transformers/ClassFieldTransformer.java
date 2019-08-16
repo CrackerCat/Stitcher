@@ -1,6 +1,7 @@
 package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.patcher.ClassTransformer;
+import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -8,8 +9,8 @@ import org.objectweb.asm.tree.FieldNode;
 public class ClassFieldTransformer extends ClassTransformer {
     private final FieldNode field;
 
-    public ClassFieldTransformer(FieldNode field, int priority) {
-        super(priority);
+    public ClassFieldTransformer(PluginResource source, FieldNode field, int priority) {
+        super(source, priority);
 
         this.field = field;
     }

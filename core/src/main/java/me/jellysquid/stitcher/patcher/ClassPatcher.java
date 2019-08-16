@@ -2,7 +2,6 @@ package me.jellysquid.stitcher.patcher;
 
 import me.jellysquid.stitcher.Stitcher;
 import me.jellysquid.stitcher.StitcherEnvironment;
-import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -11,35 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ClassPatcher {
-    private final PluginResource source;
     private final Type target;
 
-    private final List<ClassTransformer> transformers;
+    private final List<ClassTransformer> transformers = new ArrayList<>();
 
-    ClassPatcher(PluginResource source, Type target, List<ClassTransformer> transformers) {
-        this.source = source;
+    private boolean isSorted = false;
+
+    public ClassPatcher(Type target) {
         this.target = target;
-
-        this.transformers = this.sortAndVerifyTransformers(new ArrayList<>(transformers));
     }
 
-    private List<ClassTransformer> sortAndVerifyTransformers(List<ClassTransformer> transformers) {
+    private void sortTransformers() {
         // Descending order
-        transformers.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+        this.transformers.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
 
         if (StitcherEnvironment.isTracingEnabled()) {
-            Stitcher.LOGGER.trace("Transformation order for " + this.target);
+            Stitcher.LOGGER.trace("Sorting transformers for target: " + this.target);
 
-            for (ClassTransformer transformer : transformers) {
+            for (ClassTransformer transformer : this.transformers) {
                 Stitcher.LOGGER.trace(" - [{}] {}", String.format("%05d", transformer.getPriority()), transformer.toString());
             }
         }
 
-        return transformers;
+        this.isSorted = true;
     }
 
     public final boolean transformClass(ClassNode classNode) throws TransformerException {
         long start = System.nanoTime();
+
+        if (!this.isSorted) {
+            this.sortTransformers();
+        }
 
         int transformations = 0;
 
@@ -64,8 +65,14 @@ public final class ClassPatcher {
         return this.target;
     }
 
+    public void addTransformers(List<ClassTransformer> transformers) {
+        this.transformers.addAll(transformers);
+
+        this.isSorted = false;
+    }
+
     @Override
     public String toString() {
-        return String.format("ClassPatcher{target='%s',src='%s'}", this.target, this.source);
+        return String.format("ClassPatcher{target='%s'}", this.target);
     }
 }

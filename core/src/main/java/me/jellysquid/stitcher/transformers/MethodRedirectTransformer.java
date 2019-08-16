@@ -4,6 +4,7 @@ import me.jellysquid.stitcher.capture.LocalVariableCapture;
 import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
+import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
@@ -30,7 +31,9 @@ public class MethodRedirectTransformer extends ClassTransformer {
 
     private final LocalVariableCapture capture;
 
-    public MethodRedirectTransformer(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+    public MethodRedirectTransformer(PluginResource source, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+        super(source);
+
         this.method = method;
 
         AnnotationParser values = new AnnotationParser(annotation);
@@ -114,8 +117,8 @@ public class MethodRedirectTransformer extends ClassTransformer {
 
     public static class Builder implements ClassTransformerFactory {
         @Override
-        public ClassTransformer build(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-            return new MethodRedirectTransformer(method, annotation);
+        public ClassTransformer build(PluginResource source, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+            return new MethodRedirectTransformer(source, method, annotation);
         }
     }
 }
