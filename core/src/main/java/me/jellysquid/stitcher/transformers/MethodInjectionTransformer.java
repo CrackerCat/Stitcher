@@ -4,7 +4,6 @@ import me.jellysquid.stitcher.capture.LocalVariableCapture;
 import me.jellysquid.stitcher.inject.Needle;
 import me.jellysquid.stitcher.inject.NeedleMatcher;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
-import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
@@ -27,7 +26,7 @@ public class MethodInjectionTransformer extends ClassTransformer {
 
     protected final int offset;
 
-    protected MethodInjectionTransformer(PluginResource source, MethodNode method, AnnotationNode node) throws TransformerBuildException {
+    public MethodInjectionTransformer(PluginResource source, MethodNode method, AnnotationNode node) throws TransformerBuildException {
         super(source);
 
         this.method = method;
@@ -92,12 +91,5 @@ public class MethodInjectionTransformer extends ClassTransformer {
     @Override
     public String toString() {
         return String.format("MethodInjectionTransformer{impl='%s', target='%s'}", this.method.name, this.target);
-    }
-
-    public static class Builder implements ClassTransformerFactory {
-        @Override
-        public ClassTransformer build(PluginResource source, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-            return new MethodInjectionTransformer(source, method, annotation);
-        }
     }
 }

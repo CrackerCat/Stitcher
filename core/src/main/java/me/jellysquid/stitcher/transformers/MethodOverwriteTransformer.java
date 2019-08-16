@@ -1,7 +1,6 @@
 package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.patcher.ClassTransformer;
-import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
@@ -23,7 +22,7 @@ public class MethodOverwriteTransformer extends ClassTransformer {
 
     private final InsnList instructions;
 
-    private MethodOverwriteTransformer(PluginResource source, MethodNode method, AnnotationNode annotation) {
+    public MethodOverwriteTransformer(PluginResource source, MethodNode method, AnnotationNode annotation) {
         super(source);
 
         this.returnType = Type.getReturnType(method.desc);
@@ -52,12 +51,5 @@ public class MethodOverwriteTransformer extends ClassTransformer {
     @Override
     public String toString() {
         return String.format("MethodOverwriteTransformer{target=%s}", this.target);
-    }
-
-    public static class Builder implements ClassTransformerFactory {
-        @Override
-        public ClassTransformer build(PluginResource source, MethodNode method, AnnotationNode annotation) {
-            return new MethodOverwriteTransformer(source, method, annotation);
-        }
     }
 }

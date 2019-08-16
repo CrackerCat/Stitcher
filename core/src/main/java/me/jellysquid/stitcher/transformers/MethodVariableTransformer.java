@@ -1,8 +1,6 @@
 package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.inject.Needle;
-import me.jellysquid.stitcher.patcher.ClassTransformer;
-import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
@@ -13,7 +11,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class MethodVariableTransformer extends MethodInjectionTransformer {
-    private MethodVariableTransformer(PluginResource source, MethodNode method, AnnotationNode node) throws TransformerBuildException {
+    public MethodVariableTransformer(PluginResource source, MethodNode method, AnnotationNode node) throws TransformerBuildException {
         super(source, method, node);
     }
 
@@ -29,12 +27,5 @@ public class MethodVariableTransformer extends MethodInjectionTransformer {
         super.inject(classNode, method, needle);
 
         method.instructions.remove(needle.getNode());
-    }
-
-    public static class Builder implements ClassTransformerFactory {
-        @Override
-        public ClassTransformer build(PluginResource source, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-            return new MethodVariableTransformer(source, method, annotation);
-        }
     }
 }

@@ -4,6 +4,7 @@ import me.jellysquid.stitcher.annotations.*;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.Remapper;
 import me.jellysquid.stitcher.transformers.*;
+import me.jellysquid.stitcher.transformers.factory.ReflectionClassTransformerFactory;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import org.objectweb.asm.ClassReader;
@@ -23,10 +24,10 @@ public class TransformationReader {
     private final Map<String, ClassTransformerFactory> methodTransformationTypes = new HashMap<>();
 
     public TransformationReader() {
-        this.registerType(Type.getDescriptor(Overwrite.class), new MethodOverwriteTransformer.Builder());
-        this.registerType(Type.getDescriptor(Inject.class), new MethodInjectionTransformer.Builder());
-        this.registerType(Type.getDescriptor(Redirect.class), new MethodRedirectTransformer.Builder());
-        this.registerType(Type.getDescriptor(ModifyVariable.class), new MethodVariableTransformer.Builder());
+        this.registerType(Type.getDescriptor(Overwrite.class), new ReflectionClassTransformerFactory(MethodOverwriteTransformer.class));
+        this.registerType(Type.getDescriptor(Inject.class), new ReflectionClassTransformerFactory(MethodInjectionTransformer.class));
+        this.registerType(Type.getDescriptor(Redirect.class), new ReflectionClassTransformerFactory(MethodRedirectTransformer.class));
+        this.registerType(Type.getDescriptor(ModifyVariable.class), new ReflectionClassTransformerFactory(MethodVariableTransformer.class));
     }
 
     private void registerType(String type, ClassTransformerFactory factory) {
@@ -137,4 +138,5 @@ public class TransformationReader {
 
         return methodTransformer;
     }
+
 }

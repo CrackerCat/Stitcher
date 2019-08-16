@@ -3,7 +3,6 @@ package me.jellysquid.stitcher.transformers;
 import me.jellysquid.stitcher.capture.LocalVariableCapture;
 import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
-import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
@@ -113,12 +112,5 @@ public class MethodRedirectTransformer extends ClassTransformer {
     @Override
     public String toString() {
         return String.format("MethodRedirectTransformer{targets=%s, site=%s, destination='%s'}", this.targets, this.site, this.method.name);
-    }
-
-    public static class Builder implements ClassTransformerFactory {
-        @Override
-        public ClassTransformer build(PluginResource source, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-            return new MethodRedirectTransformer(source, method, annotation);
-        }
     }
 }
