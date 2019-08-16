@@ -3,9 +3,9 @@ package me.jellysquid.stitcher.plugin;
 public class PluginCandidate {
     private final PluginManifest manifest;
 
-    private final PluginResourceProvider resources;
+    private final PluginResourceLoader resources;
 
-    public PluginCandidate(PluginManifest manifest, PluginResourceProvider resources) {
+    public PluginCandidate(PluginManifest manifest, PluginResourceLoader resources) {
         this.manifest = manifest;
         this.resources = resources;
     }
@@ -14,7 +14,7 @@ public class PluginCandidate {
         return this.manifest;
     }
 
-    public PluginResourceProvider getResources() {
+    public PluginResourceLoader getResources() {
         return this.resources;
     }
 

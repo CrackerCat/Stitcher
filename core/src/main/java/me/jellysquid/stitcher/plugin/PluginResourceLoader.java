@@ -2,9 +2,8 @@ package me.jellysquid.stitcher.plugin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
-public interface PluginResourceProvider {
+public interface PluginResourceLoader {
     /**
      * Returns the manifest of this plugin.
      *
@@ -14,7 +13,7 @@ public interface PluginResourceProvider {
 
     /**
      * Returns a byte array containing the bytes of the specified resource contained within the plugin. This should be
-     * used instead of manually creating a byte array from {@link PluginResourceProvider#getStream(String)} as to allow the
+     * used instead of manually creating a byte array from {@link PluginResourceLoader#getStream(String)} as to allow the
      * implementation to perform optimizations.
      *
      * @param name The name of the resource to retrieve

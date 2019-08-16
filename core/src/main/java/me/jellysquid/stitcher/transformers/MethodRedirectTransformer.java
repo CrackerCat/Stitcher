@@ -4,7 +4,6 @@ import me.jellysquid.stitcher.capture.LocalVariableCapture;
 import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
-import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
@@ -56,7 +55,7 @@ public class MethodRedirectTransformer extends ClassTransformer {
         boolean modified = false;
 
         for (MethodRef target : this.targets) {
-            modified |= this.apply(ASMHelper.findMethod(classNode, target));
+            modified |= this.apply(classNode, ASMHelper.findMethod(classNode, target));
         }
 
         if (modified) {
@@ -66,7 +65,7 @@ public class MethodRedirectTransformer extends ClassTransformer {
         return modified;
     }
 
-    private boolean apply(MethodNode methodNode) throws TransformerException {
+    private boolean apply(ClassNode classNode, MethodNode methodNode) throws TransformerException {
         boolean modified = false;
 
         for (AbstractInsnNode insnNode : SliceRange.all(methodNode.instructions)) {
@@ -74,18 +73,22 @@ public class MethodRedirectTransformer extends ClassTransformer {
                 MethodInsnNode methodInsnNode = (MethodInsnNode) insnNode;
 
                 if (this.site.matches(methodInsnNode)) {
-                    boolean staticRedirect = (methodNode.access & Opcodes.ACC_STATIC) != 0;
-                    boolean staticSite = (this.method.access & Opcodes.ACC_STATIC) != 0;
+                    boolean isStaticInvoke = methodInsnNode.getOpcode() == Opcodes.INVOKESTATIC;
+                    boolean isStaticRedirect = (this.method.access & Opcodes.ACC_STATIC) != 0;
 
-                    if (methodInsnNode.getOpcode() == Opcodes.INVOKESTATIC) {
-                        if (!staticRedirect) {
-                            throw new TransformerException("Method redirect must be static as call site is from within a static method");
-                        }
-                    } else if (staticRedirect) {
-                        throw new TransformerException("Method redirect must be non-static as call site is from within a non-static method");
+                    if (isStaticInvoke && !isStaticRedirect) {
+                        throw new TransformerException("The redirect method must be static when redirecting a static method call");
                     }
 
                     Validate.areMethodReturnTypesEqual(Type.getReturnType(methodInsnNode.desc), this.returnType);
+
+                    if (methodInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL && isStaticRedirect) {
+                        if (this.argumentTypes.length <= 0 || !classNode.name.equals(this.argumentTypes[0].getInternalName())) {
+                            throw new TransformerException("The first argument of a static redirect made from a non-static call must match the type of `this`");
+                        }
+
+                        methodInsnNode.setOpcode(Opcodes.INVOKESTATIC);
+                    }
 
                     methodInsnNode.name = this.method.name;
                     methodInsnNode.desc = this.method.desc;
@@ -111,7 +114,7 @@ public class MethodRedirectTransformer extends ClassTransformer {
 
     public static class Builder implements ClassTransformerFactory {
         @Override
-        public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+        public ClassTransformer build(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
             return new MethodRedirectTransformer(method, annotation);
         }
     }

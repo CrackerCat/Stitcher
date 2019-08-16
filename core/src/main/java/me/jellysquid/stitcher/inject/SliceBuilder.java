@@ -35,7 +35,7 @@ public class SliceBuilder {
         AbstractInsnNode start = null, end = null;
 
         if (this.start != null) {
-            start = this.start.findFirst(methodNode, SliceRange.all(methodNode.instructions)).getInstruction();
+            start = this.start.findFirst(methodNode, SliceRange.all(methodNode.instructions)).getNode();
         }
 
         if (this.end != null) {
@@ -47,7 +47,7 @@ public class SliceBuilder {
                 slice = SliceRange.all(methodNode.instructions);
             }
 
-            end = this.end.findFirst(methodNode, slice).getInstruction();
+            end = this.end.findFirst(methodNode, slice).getNode();
         }
 
         return new SliceRange(methodNode.instructions, start, end);

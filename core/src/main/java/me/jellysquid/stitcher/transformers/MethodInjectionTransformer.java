@@ -5,7 +5,6 @@ import me.jellysquid.stitcher.inject.Needle;
 import me.jellysquid.stitcher.inject.NeedleMatcher;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
-import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
@@ -28,8 +27,6 @@ public class MethodInjectionTransformer extends ClassTransformer {
     protected final int offset;
 
     protected MethodInjectionTransformer(MethodNode method, AnnotationNode node) throws TransformerBuildException {
-        super(0);
-
         this.method = method;
         this.method.name = getUniqueMethodName(this.method);
 
@@ -54,9 +51,7 @@ public class MethodInjectionTransformer extends ClassTransformer {
 
         if (!sites.isEmpty()) {
             for (Needle needle : sites) {
-                needle.shift(this.offset);
-
-                this.inject(classNode, methodNode, needle);
+                this.inject(classNode, methodNode, needle.shift(this.offset));
             }
 
             classNode.methods.add(this.method);
@@ -80,13 +75,13 @@ public class MethodInjectionTransformer extends ClassTransformer {
         list.add(new MethodInsnNode(isStatic ? Opcodes.INVOKESTATIC : Opcodes.INVOKESPECIAL,
                 classNode.name, this.method.name, this.method.desc, false));
 
-        needle.shift(this.offset);
-        needle.inject(list);
+        needle.shift(this.offset).inject(list);
     }
 
     private static String getUniqueMethodName(MethodNode method) {
         int hash = method.name.hashCode();
         hash = 37 * hash + method.desc.hashCode();
+        hash = 37 * hash + method.access;
 
         return method.name + "$" + Integer.toString(Math.abs(hash), 36);
     }
@@ -98,7 +93,7 @@ public class MethodInjectionTransformer extends ClassTransformer {
 
     public static class Builder implements ClassTransformerFactory {
         @Override
-        public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+        public ClassTransformer build(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
             return new MethodInjectionTransformer(method, annotation);
         }
     }

@@ -4,6 +4,7 @@ import me.jellysquid.stitcher.Stitcher;
 import me.jellysquid.stitcher.patcher.ClassPatcher;
 import me.jellysquid.stitcher.patcher.ClassPatcherBuilder;
 import me.jellysquid.stitcher.plugin.Plugin;
+import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 import me.jellysquid.stitcher.util.FilesHelper;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
@@ -117,23 +118,28 @@ public class EnvironmentPatcher {
             String qualifiedName = config.getPackageRoot() + "." + transformer;
             String bytecodePath = qualifiedName.replace('.', '/') + ".class";
 
-            patchers.add(this.loadClassPatcherFromPlugin(plugin, config, bytecodePath));
+            PluginResource resource = plugin.getResource(bytecodePath);
+
+            ClassPatcher patcher = this.loadClassPatcherFromPlugin(resource);
+
+            patchers.add(patcher);
         }
 
         return patchers;
     }
 
-    private ClassPatcher loadClassPatcherFromPlugin(Plugin plugin, PluginGroupConfig config, String name) {
+    private ClassPatcher loadClassPatcherFromPlugin(PluginResource resource) {
         long start = System.currentTimeMillis();
 
-        ClassPatcher patcher = this.parser.createClassPatcher(plugin, config, name);
+        ClassPatcher patcher = this.parser.createClassPatcher(resource);
 
-        Stitcher.LOGGER.debug("Loaded class patcher from bytecode {} in {} ({}ms)", name, plugin, System.currentTimeMillis() - start);
+        Stitcher.LOGGER.debug("Loaded class patcher from bytecode {} in {} ({}ms)", resource.getPath(),
+                resource.getPlugin(), System.currentTimeMillis() - start);
 
         try {
             this.addPatcher(patcher);
         } catch (Exception e) {
-            throw new RuntimeException("Could not add class patcher to environment: " + name, e);
+            throw new RuntimeException("Could not add class patcher to environment: " + resource.getPath(), e);
         }
 
         return patcher;

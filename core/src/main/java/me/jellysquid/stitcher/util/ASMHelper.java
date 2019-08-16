@@ -16,7 +16,7 @@ public class ASMHelper {
      */
     public static MethodNode findMethod(ClassNode classNode, MethodRef ref) throws TransformerException {
         for (MethodNode methodNode : classNode.methods) {
-            if (ref.matches(methodNode)) {
+            if (ref.matches(classNode, methodNode)) {
                 return methodNode;
             }
         }

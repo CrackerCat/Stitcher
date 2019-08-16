@@ -4,10 +4,12 @@ import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.ClassNode;
 
 public abstract class ClassTransformer {
+    private static final int DEFAULT_PRIORITY = 0;
+
     protected int priority;
 
     protected ClassTransformer() {
-        this.priority = 0;
+        this(DEFAULT_PRIORITY);
     }
 
     protected ClassTransformer(int priority) {

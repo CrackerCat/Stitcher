@@ -2,7 +2,6 @@ package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
-import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
@@ -54,7 +53,7 @@ public class MethodOverwriteTransformer extends ClassTransformer {
 
     public static class Builder implements ClassTransformerFactory {
         @Override
-        public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) {
+        public ClassTransformer build(MethodNode method, AnnotationNode annotation) {
             return new MethodOverwriteTransformer(method, annotation);
         }
     }

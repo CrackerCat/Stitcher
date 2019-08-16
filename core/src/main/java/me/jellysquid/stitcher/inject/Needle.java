@@ -12,38 +12,36 @@ import org.objectweb.asm.tree.MethodNode;
 public class Needle {
     private final InsnList instructions;
 
-    private AbstractInsnNode node;
-
-    private boolean erases;
+    private final AbstractInsnNode node;
 
     public Needle(MethodNode method, AbstractInsnNode after) {
-        this.instructions = method.instructions;
+        this(method.instructions, after);
+    }
+
+    public Needle(InsnList instructions, AbstractInsnNode after) {
+        this.instructions = instructions;
         this.node = after;
     }
 
-    public void shift(int offset) {
-        int steps = Math.abs(offset);
-
-        boolean forwards = offset > 0;
-
-        for (int i = 0; this.node != null && i < steps; i++) {
-            this.node = forwards ? this.node.getNext() : this.node.getPrevious();
-        }
-    }
-
-    public AbstractInsnNode getInstruction() {
+    public AbstractInsnNode getNode() {
         return this.node;
     }
 
     public void inject(InsnList list) {
         this.instructions.insert(this.node, list);
-
-        if (this.erases) {
-            this.instructions.remove(this.node);
-        }
     }
 
-    public void setErases(boolean erases) {
-        this.erases = erases;
+    public Needle shift(int shift) {
+        if (shift == 0) {
+            return this;
+        }
+
+        AbstractInsnNode node = this.node;
+
+        for (int i = 0; this.node != null && i < Math.abs(shift); i++) {
+            node = shift > 0 ? this.node.getNext() : this.node.getPrevious();
+        }
+
+        return new Needle(this.instructions, node);
     }
 }

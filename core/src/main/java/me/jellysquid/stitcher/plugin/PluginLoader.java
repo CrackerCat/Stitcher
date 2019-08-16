@@ -2,7 +2,7 @@ package me.jellysquid.stitcher.plugin;
 
 import com.eclipsesource.json.Json;
 import me.jellysquid.stitcher.Stitcher;
-import me.jellysquid.stitcher.environment.Environment;
+import me.jellysquid.stitcher.environment.PluginProvider;
 import me.jellysquid.stitcher.plugin.config.PluginConfig;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 
@@ -18,12 +18,12 @@ public class PluginLoader {
     /**
      * Creates a {@link Plugin} for every available and valid plugin discovered by {@param environment}.
      *
-     * @param environment The environment which will discover the plugins for the factory to process
+     * @param provider The {@link PluginProvider} which will discover the plugins for the factory to process
      * @return A list of instances representing valid plugins
      */
-    public static List<Plugin> loadAll(Environment environment) {
+    public static List<Plugin> loadAll(PluginProvider provider) {
         try {
-            return environment.discoverCandidatePlugins()
+            return provider.discoverCandidatePlugins()
                     .map(PluginLoader::loadPlugin)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
@@ -38,7 +38,7 @@ public class PluginLoader {
         Stitcher.LOGGER.debug("Considering plugin candidate {}", candidate);
 
         PluginManifest manifest = candidate.getManifest();
-        PluginResourceProvider resources = candidate.getResources();
+        PluginResourceLoader resources = candidate.getResources();
 
         String configName = "stitcher." + manifest.getName() + ".json";
 
@@ -69,7 +69,7 @@ public class PluginLoader {
         return plugin;
     }
 
-    private static PluginGroupConfig loadTransformerConfig(PluginResourceProvider resources, PluginConfig pluginConfig, String group) {
+    private static PluginGroupConfig loadTransformerConfig(PluginResourceLoader resources, PluginConfig pluginConfig, String group) {
         String path = "stitcher." + pluginConfig.getName() + "." + group + ".json";
 
         try (Reader reader = new InputStreamReader(resources.getStream(path))) {

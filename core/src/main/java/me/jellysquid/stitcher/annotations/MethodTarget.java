@@ -5,7 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface MethodTarget {
-    Class<?> owner() default void.class;
+    Class<?> owner();
 
     String value();
 

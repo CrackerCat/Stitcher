@@ -1,18 +1,18 @@
 package me.jellysquid.stitcher.plugin.resources;
 
 import me.jellysquid.stitcher.plugin.PluginManifest;
-import me.jellysquid.stitcher.plugin.PluginResourceProvider;
+import me.jellysquid.stitcher.plugin.PluginResourceLoader;
 import me.jellysquid.stitcher.util.StreamHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ClassLoaderResourceProvider implements PluginResourceProvider {
+public class ClassLoaderResourceLoader implements PluginResourceLoader {
     private final PluginManifest manifest;
 
     private final ClassLoader classLoader;
 
-    public ClassLoaderResourceProvider(PluginManifest manifest, ClassLoader classLoader) {
+    public ClassLoaderResourceLoader(PluginManifest manifest, ClassLoader classLoader) {
         this.manifest = manifest;
         this.classLoader = classLoader;
     }

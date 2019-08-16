@@ -2,6 +2,7 @@ package me.jellysquid.stitcher.patcher;
 
 import me.jellysquid.stitcher.Stitcher;
 import me.jellysquid.stitcher.StitcherEnvironment;
+import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -10,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ClassPatcher {
-    private final String source;
+    private final PluginResource source;
     private final Type target;
 
     private final List<ClassTransformer> transformers;
 
-    ClassPatcher(String source, Type target, List<ClassTransformer> transformers) {
+    ClassPatcher(PluginResource source, Type target, List<ClassTransformer> transformers) {
         this.source = source;
         this.target = target;
 

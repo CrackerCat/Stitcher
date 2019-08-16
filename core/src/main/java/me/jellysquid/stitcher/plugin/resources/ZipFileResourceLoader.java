@@ -1,7 +1,7 @@
 package me.jellysquid.stitcher.plugin.resources;
 
 import me.jellysquid.stitcher.plugin.PluginManifest;
-import me.jellysquid.stitcher.plugin.PluginResourceProvider;
+import me.jellysquid.stitcher.plugin.PluginResourceLoader;
 import me.jellysquid.stitcher.util.StreamHelper;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ZipFileResourceProvider implements PluginResourceProvider {
+public class ZipFileResourceLoader implements PluginResourceLoader {
     private static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
     private static final String MANIFEST_ATTRIBUTE = "Stitcher-Plugin-Name";
 
@@ -19,7 +19,7 @@ public class ZipFileResourceProvider implements PluginResourceProvider {
 
     private final PluginManifest manifest;
 
-    public ZipFileResourceProvider(ZipFile file) {
+    public ZipFileResourceLoader(ZipFile file) {
         this.file = file;
 
         if (this.exists(MANIFEST_PATH)) {
@@ -35,7 +35,7 @@ public class ZipFileResourceProvider implements PluginResourceProvider {
         }
     }
 
-    public ZipFileResourceProvider(Path path) throws IOException {
+    public ZipFileResourceLoader(Path path) throws IOException {
         this(new ZipFile(path.toFile()));
     }
 

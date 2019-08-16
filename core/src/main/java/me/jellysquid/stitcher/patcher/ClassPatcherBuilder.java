@@ -1,8 +1,7 @@
 package me.jellysquid.stitcher.patcher;
 
 import me.jellysquid.stitcher.annotations.*;
-import me.jellysquid.stitcher.plugin.Plugin;
-import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
+import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.Remapper;
 import me.jellysquid.stitcher.transformers.*;
 import me.jellysquid.stitcher.util.AnnotationParser;
@@ -34,11 +33,11 @@ public class ClassPatcherBuilder {
         this.methodTransformationTypes.put(type, factory);
     }
 
-    public ClassPatcher createClassPatcher(Plugin plugin, PluginGroupConfig config, String className) {
+    public ClassPatcher createClassPatcher(PluginResource resource) {
         byte[] classBytes;
 
         try {
-            classBytes = plugin.getResources().getBytes(className);
+            classBytes = resource.getBytes();
         } catch (IOException e) {
             throw new RuntimeException("Could not fetch bytecode to construct class patcher", e);
         }
@@ -49,15 +48,15 @@ public class ClassPatcherBuilder {
         classReader.accept(classNode, ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
 
         try {
-            return this.buildClassPatcher(plugin, config, classNode);
+            return this.buildClassPatcher(resource, classNode);
         } catch (Exception e) {
-            throw new RuntimeException("Could not build class patcher from class " + className, e);
+            throw new RuntimeException("Could not build class patcher from class " + resource.getPath(), e);
         }
     }
 
     private static final String TRANSFORM_MARKER = Type.getDescriptor(Transform.class);
 
-    private ClassPatcher buildClassPatcher(Plugin plugin, PluginGroupConfig config, ClassNode classNode) {
+    private ClassPatcher buildClassPatcher(PluginResource resource, ClassNode classNode) {
         Type target = null;
         int priority = 0;
 
@@ -95,7 +94,7 @@ public class ClassPatcherBuilder {
                 continue;
             }
 
-            ClassTransformer transformer = this.buildMethodTransformer(config, methodNode);
+            ClassTransformer transformer = this.buildMethodTransformer(methodNode);
 
             if (transformer != null) {
                 transformers.add(transformer);
@@ -110,10 +109,10 @@ public class ClassPatcherBuilder {
             return null;
         }
 
-        return new ClassPatcher("plugin[" + plugin.getConfig().getName() + "]://" + classNode.name, target, transformers);
+        return new ClassPatcher(resource, target, transformers);
     }
 
-    private ClassTransformer buildMethodTransformer(PluginGroupConfig config, MethodNode methodNode) {
+    private ClassTransformer buildMethodTransformer(MethodNode methodNode) {
         List<AnnotationNode> annotations = methodNode.invisibleAnnotations;
 
         if (annotations == null || annotations.isEmpty()) {
@@ -127,7 +126,7 @@ public class ClassPatcherBuilder {
 
             if (factory != null) {
                 try {
-                    methodTransformer = factory.build(config, methodNode, annotation);
+                    methodTransformer = factory.build(methodNode, annotation);
                 } catch (TransformerBuildException e) {
                     throw new RuntimeException("Failed to build method transformer", e);
                 }
