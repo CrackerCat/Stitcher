@@ -65,16 +65,21 @@ public class MethodRedirectTransformer implements ClassTransformer {
                 MethodInsnNode methodInsnNode = (MethodInsnNode) insnNode;
 
                 if (this.site.matches(methodInsnNode)) {
-                    if ((this.method.access & Opcodes.ACC_STATIC) == 0) {
-                        throw new TransformerException("Method redirect must be static");
-                    }
+					boolean staticRedirect = (methodNode.access & Opcodes.ACC_STATIC) != 0;
+					boolean staticSite = (this.method.access & Opcodes.ACC_STATIC) != 0;
+
+					if (methodInsnNode.getOpcode() == Opcodes.INVOKESTATIC) {
+						if (!staticRedirect) {
+							throw new TransformerException("Method redirect must be static as call site is from within a static method");
+						}
+					} else if (staticRedirect) {
+						throw new TransformerException("Method redirect must be non-static as call site is from within a non-static method");
+					}
 
                     Validate.areMethodReturnTypesEqual(Type.getReturnType(methodInsnNode.desc), this.returnType);
 
                     methodInsnNode.name = this.method.name;
                     methodInsnNode.desc = this.method.desc;
-
-                    methodInsnNode.setOpcode(Opcodes.INVOKESTATIC);
 
                     methodNode.instructions.insertBefore(methodInsnNode, this.capture.createLoadInstructions(methodNode));
 
