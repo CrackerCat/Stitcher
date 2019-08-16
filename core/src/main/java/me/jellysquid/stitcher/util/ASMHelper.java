@@ -7,14 +7,14 @@ import org.objectweb.asm.tree.MethodNode;
 
 public class ASMHelper {
     /**
-	 * Locates a method within a {@link ClassNode} by a {@link MethodRef}.
+     * Locates a method within a {@link ClassNode} by a {@link MethodRef}.
      *
      * @param classNode The {@link ClassNode} to search within
-	 * @param ref       The {@link MethodRef} representing the method to search for
+     * @param ref       The {@link MethodRef} representing the method to search for
      * @return The first {@link MethodNode} matching the description of {@param ref}.
      * @throws TransformerException If no method matching {@param ref} can be found.
      */
-	public static MethodNode findMethod(ClassNode classNode, MethodRef ref) throws TransformerException {
+    public static MethodNode findMethod(ClassNode classNode, MethodRef ref) throws TransformerException {
         for (MethodNode methodNode : classNode.methods) {
             if (ref.matches(methodNode)) {
                 return methodNode;

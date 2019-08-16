@@ -14,5 +14,5 @@ public @interface Inject {
 
     Slice[] slice() default {};
 
-	int priority() default 0;
+    int priority() default 0;
 }

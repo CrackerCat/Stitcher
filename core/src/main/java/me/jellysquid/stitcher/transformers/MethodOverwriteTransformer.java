@@ -19,20 +19,20 @@ public class MethodOverwriteTransformer extends ClassTransformer {
 
     private final Type[] argumentTypes;
 
-	private final MethodRef target;
+    private final MethodRef target;
 
     private final InsnList instructions;
 
-	private MethodOverwriteTransformer(MethodNode method, AnnotationNode annotation) {
-		this.returnType = Type.getReturnType(method.desc);
-		this.argumentTypes = Type.getArgumentTypes(method.desc);
-		this.instructions = method.instructions;
+    private MethodOverwriteTransformer(MethodNode method, AnnotationNode annotation) {
+        this.returnType = Type.getReturnType(method.desc);
+        this.argumentTypes = Type.getArgumentTypes(method.desc);
+        this.instructions = method.instructions;
 
-		AnnotationParser values = new AnnotationParser(annotation);
+        AnnotationParser values = new AnnotationParser(annotation);
 
-		this.target = new MethodRef(values.parseAnnotation("target"));
+        this.target = new MethodRef(values.parseAnnotation("target"));
 
-		this.priority = values.getValue("priority", Integer.class, 0);
+        this.priority = values.getValue("priority", Integer.class, 0);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class MethodOverwriteTransformer extends ClassTransformer {
 
     public static class Builder implements ClassTransformerFactory {
         @Override
-		public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) {
-			return new MethodOverwriteTransformer(method, annotation);
+        public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) {
+            return new MethodOverwriteTransformer(method, annotation);
         }
     }
 }

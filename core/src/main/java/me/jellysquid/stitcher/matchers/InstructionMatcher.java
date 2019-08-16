@@ -12,7 +12,7 @@ import java.util.List;
 public interface InstructionMatcher {
     List<Needle> findAll(MethodNode method, SliceRange slice);
 
-	static InstructionMatcher create(AnnotationParser where) {
+    static InstructionMatcher create(AnnotationParser where) {
         At at = where.getEnum("at", At.class);
 
         switch (at) {

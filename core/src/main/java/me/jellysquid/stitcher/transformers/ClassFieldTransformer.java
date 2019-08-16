@@ -6,23 +6,23 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 
 public class ClassFieldTransformer extends ClassTransformer {
-	private final FieldNode field;
+    private final FieldNode field;
 
-	public ClassFieldTransformer(FieldNode field, int priority) {
-		super(priority);
+    public ClassFieldTransformer(FieldNode field, int priority) {
+        super(priority);
 
-		this.field = field;
-	}
+        this.field = field;
+    }
 
-	@Override
-	public boolean transform(ClassNode classNode) throws TransformerException {
-		classNode.fields.add(this.field);
+    @Override
+    public boolean transform(ClassNode classNode) throws TransformerException {
+        classNode.fields.add(this.field);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("ClassFieldTransformer{name='%s'}", this.field.name);
-	}
+    @Override
+    public String toString() {
+        return String.format("ClassFieldTransformer{name='%s'}", this.field.name);
+    }
 }

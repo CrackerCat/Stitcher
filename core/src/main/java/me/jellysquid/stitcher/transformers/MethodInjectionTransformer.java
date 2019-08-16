@@ -19,7 +19,7 @@ import java.util.List;
 public class MethodInjectionTransformer extends ClassTransformer {
     protected final MethodRef target;
 
-	private final LocalVariableCapture localCapture;
+    private final LocalVariableCapture localCapture;
 
     protected final MethodNode method;
 
@@ -27,23 +27,23 @@ public class MethodInjectionTransformer extends ClassTransformer {
 
     protected final int offset;
 
-	protected MethodInjectionTransformer(MethodNode method, AnnotationNode node) throws TransformerBuildException {
-		super(0);
+    protected MethodInjectionTransformer(MethodNode method, AnnotationNode node) throws TransformerBuildException {
+        super(0);
 
         this.method = method;
         this.method.name = getUniqueMethodName(this.method);
 
-		AnnotationParser inject = new AnnotationParser(node);
+        AnnotationParser inject = new AnnotationParser(node);
 
-		this.target = new MethodRef(inject.parseAnnotation("target"));
+        this.target = new MethodRef(inject.parseAnnotation("target"));
 
-		AnnotationParser where = inject.parseAnnotation("where");
+        AnnotationParser where = inject.parseAnnotation("where");
 
-		this.matcher = NeedleMatcher.build(inject, where);
-		this.localCapture = LocalVariableCapture.buildCaptures(method);
+        this.matcher = NeedleMatcher.build(inject, where);
+        this.localCapture = LocalVariableCapture.buildCaptures(method);
 
-		this.offset = where.getValue("offset", Integer.class, 0);
-		this.priority = where.getValue("priority", Integer.class, 0);
+        this.offset = where.getValue("offset", Integer.class, 0);
+        this.priority = where.getValue("priority", Integer.class, 0);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MethodInjectionTransformer extends ClassTransformer {
     public static class Builder implements ClassTransformerFactory {
         @Override
         public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-			return new MethodInjectionTransformer(method, annotation);
+            return new MethodInjectionTransformer(method, annotation);
         }
     }
 }

@@ -13,5 +13,5 @@ public @interface ModifyVariable {
 
     int[] only() default {};
 
-	int priority() default 0;
+    int priority() default 0;
 }

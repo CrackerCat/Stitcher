@@ -12,16 +12,16 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class MethodVariableTransformer extends MethodInjectionTransformer {
-	private MethodVariableTransformer(MethodNode method, AnnotationNode node) throws TransformerBuildException {
-		super(method, node);
+    private MethodVariableTransformer(MethodNode method, AnnotationNode node) throws TransformerBuildException {
+        super(method, node);
 
-		if (!(this.matcher.getNeedleFactory() instanceof AtVariable)) {
-			throw new IllegalArgumentException("Matcher must be either LOAD or STORE");
-		}
+        if (!(this.matcher.getNeedleFactory() instanceof AtVariable)) {
+            throw new IllegalArgumentException("Matcher must be either LOAD or STORE");
+        }
 
-		if (this.offset != 0) {
-			throw new IllegalArgumentException("Offset cannot be specified for @MethodVariable");
-		}
+        if (this.offset != 0) {
+            throw new IllegalArgumentException("Offset cannot be specified for @MethodVariable");
+        }
     }
 
     @Override
@@ -31,10 +31,10 @@ public class MethodVariableTransformer extends MethodInjectionTransformer {
         super.inject(classNode, method, needle);
     }
 
-	public static class Builder implements ClassTransformerFactory {
+    public static class Builder implements ClassTransformerFactory {
         @Override
-		public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-			return new MethodVariableTransformer(method, annotation);
+        public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+            return new MethodVariableTransformer(method, annotation);
         }
     }
 }

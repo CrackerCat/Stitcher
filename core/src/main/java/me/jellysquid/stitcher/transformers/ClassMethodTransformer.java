@@ -6,23 +6,23 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class ClassMethodTransformer extends ClassTransformer {
-	private final MethodNode method;
+    private final MethodNode method;
 
-	public ClassMethodTransformer(MethodNode method, int priority) {
-		super(priority);
+    public ClassMethodTransformer(MethodNode method, int priority) {
+        super(priority);
 
-		this.method = method;
-	}
+        this.method = method;
+    }
 
-	@Override
-	public boolean transform(ClassNode classNode) throws TransformerException {
-		classNode.methods.add(this.method);
+    @Override
+    public boolean transform(ClassNode classNode) throws TransformerException {
+        classNode.methods.add(this.method);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("ClassMethodTransformer{name='%s'}", this.method.name);
-	}
+    @Override
+    public String toString() {
+        return String.format("ClassMethodTransformer{name='%s'}", this.method.name);
+    }
 }

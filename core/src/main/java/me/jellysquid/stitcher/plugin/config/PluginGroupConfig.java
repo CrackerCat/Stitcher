@@ -14,7 +14,7 @@ public class PluginGroupConfig {
 
     private final Dist dist;
 
-	private final List<String> transformers = new ArrayList<>();
+    private final List<String> transformers = new ArrayList<>();
 
     public PluginGroupConfig(String name, JsonObject json) {
         this.name = name;
@@ -22,12 +22,12 @@ public class PluginGroupConfig {
 
         this.dist = Dist.fromName(json.getString("side", Dist.ANY.name()));
 
-		JsonValue transformers = json.get("transformers");
+        JsonValue transformers = json.get("transformers");
 
-		if (transformers != null) {
-			for (JsonValue entry : transformers.asArray()) {
-				this.transformers.add(entry.asString());
-			}
+        if (transformers != null) {
+            for (JsonValue entry : transformers.asArray()) {
+                this.transformers.add(entry.asString());
+            }
         }
     }
 

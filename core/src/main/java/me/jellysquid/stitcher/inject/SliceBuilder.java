@@ -9,9 +9,9 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.List;
 
 public class SliceBuilder {
-	private final InstructionMatcher start, end;
+    private final InstructionMatcher start, end;
 
-	private SliceBuilder(InstructionMatcher start, InstructionMatcher end) {
+    private SliceBuilder(InstructionMatcher start, InstructionMatcher end) {
         this.start = start;
         this.end = end;
     }
@@ -25,8 +25,8 @@ public class SliceBuilder {
     }
 
     private static SliceBuilder createSliceMatcher(AnnotationParser values) {
-		InstructionMatcher startMatcher = InstructionMatcher.create(values.parseAnnotation("start"));
-		InstructionMatcher endMatcher = InstructionMatcher.create(values.parseAnnotation("end"));
+        InstructionMatcher startMatcher = InstructionMatcher.create(values.parseAnnotation("start"));
+        InstructionMatcher endMatcher = InstructionMatcher.create(values.parseAnnotation("end"));
 
         return new SliceBuilder(startMatcher, endMatcher);
     }

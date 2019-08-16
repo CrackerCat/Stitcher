@@ -59,34 +59,34 @@ public class ClassPatcherBuilder {
 
     private ClassPatcher buildClassPatcher(Plugin plugin, PluginGroupConfig config, ClassNode classNode) {
         Type target = null;
-		int priority = 0;
+        int priority = 0;
 
         for (AnnotationNode annotation : classNode.invisibleAnnotations) {
             if (annotation.desc.equals(TRANSFORM_MARKER)) {
                 AnnotationParser values = new AnnotationParser(annotation);
                 target = values.getValue("value", Type.class);
-				priority = values.getValue("priority", Integer.class, 0);
+                priority = values.getValue("priority", Integer.class, 0);
 
                 break;
             }
         }
 
         if (target == null) {
-			throw new RuntimeException("No transform target annotated on root class (did you specify an unrelated class name?)");
+            throw new RuntimeException("No transform target annotated on root class (did you specify an unrelated class name?)");
         }
 
         Remapper remapper = new Remapper(target);
         remapper.addFlattenedClass(classNode);
 
-		List<ClassTransformer> transformers = new ArrayList<>();
+        List<ClassTransformer> transformers = new ArrayList<>();
 
         for (String interfaceName : classNode.interfaces) {
-			transformers.add(new ClassInterfaceTransformer(interfaceName, priority));
+            transformers.add(new ClassInterfaceTransformer(interfaceName, priority));
         }
 
         for (FieldNode fieldNode : classNode.fields) {
             if (!remapper.registerFieldMapping(fieldNode)) {
-				transformers.add(new ClassFieldTransformer(fieldNode, priority));
+                transformers.add(new ClassFieldTransformer(fieldNode, priority));
             }
         }
 
@@ -98,19 +98,19 @@ public class ClassPatcherBuilder {
             ClassTransformer transformer = this.buildMethodTransformer(config, methodNode);
 
             if (transformer != null) {
-				transformers.add(transformer);
+                transformers.add(transformer);
             } else if (!remapper.registerMethodMapping(methodNode)) {
-				transformers.add(new ClassMethodTransformer(methodNode, priority));
+                transformers.add(new ClassMethodTransformer(methodNode, priority));
             }
         }
 
         remapper.transform(classNode);
 
-		if (transformers.isEmpty()) {
-			return null;
-		}
+        if (transformers.isEmpty()) {
+            return null;
+        }
 
-		return new ClassPatcher("plugin[" + plugin.getConfig().getName() + "]://" + classNode.name, target, transformers);
+        return new ClassPatcher("plugin[" + plugin.getConfig().getName() + "]://" + classNode.name, target, transformers);
     }
 
     private ClassTransformer buildMethodTransformer(PluginGroupConfig config, MethodNode methodNode) {
@@ -128,8 +128,8 @@ public class ClassPatcherBuilder {
             if (factory != null) {
                 try {
                     methodTransformer = factory.build(config, methodNode, annotation);
-				} catch (TransformerBuildException e) {
-					throw new RuntimeException("Failed to build method transformer", e);
+                } catch (TransformerBuildException e) {
+                    throw new RuntimeException("Failed to build method transformer", e);
                 }
 
                 break;

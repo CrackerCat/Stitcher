@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface Transform {
     Class<?> value();
 
-	int priority() default 0;
+    int priority() default 0;
 }

@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MethodRedirectTransformer extends ClassTransformer {
-	private final Collection<MethodRef> targets;
+    private final Collection<MethodRef> targets;
 
-	private final MethodRef site;
+    private final MethodRef site;
 
     private final MethodNode method;
 
@@ -31,21 +31,21 @@ public class MethodRedirectTransformer extends ClassTransformer {
 
     private final LocalVariableCapture capture;
 
-	public MethodRedirectTransformer(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-		this.method = method;
+    public MethodRedirectTransformer(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+        this.method = method;
 
-		AnnotationParser values = new AnnotationParser(annotation);
+        AnnotationParser values = new AnnotationParser(annotation);
 
-		this.targets = new ArrayList<>();
+        this.targets = new ArrayList<>();
 
-		for (AnnotationNode targetAnnotation : values.getList("targets", AnnotationNode.class)) {
-			this.targets.add(new MethodRef(new AnnotationParser(targetAnnotation)));
-		}
+        for (AnnotationNode targetAnnotation : values.getList("targets", AnnotationNode.class)) {
+            this.targets.add(new MethodRef(new AnnotationParser(targetAnnotation)));
+        }
 
-		this.site = new MethodRef(values.parseAnnotation("site"));
+        this.site = new MethodRef(values.parseAnnotation("site"));
 
-		this.capture = LocalVariableCapture.buildCaptures(method);
-		this.priority = values.getValue("priority", Integer.class, 0);
+        this.capture = LocalVariableCapture.buildCaptures(method);
+        this.priority = values.getValue("priority", Integer.class, 0);
 
         this.argumentTypes = Type.getArgumentTypes(this.method.desc);
         this.returnType = Type.getReturnType(this.method.desc);
@@ -55,7 +55,7 @@ public class MethodRedirectTransformer extends ClassTransformer {
     public boolean transform(ClassNode classNode) throws TransformerException {
         boolean modified = false;
 
-		for (MethodRef target : this.targets) {
+        for (MethodRef target : this.targets) {
             modified |= this.apply(ASMHelper.findMethod(classNode, target));
         }
 
@@ -74,16 +74,16 @@ public class MethodRedirectTransformer extends ClassTransformer {
                 MethodInsnNode methodInsnNode = (MethodInsnNode) insnNode;
 
                 if (this.site.matches(methodInsnNode)) {
-					boolean staticRedirect = (methodNode.access & Opcodes.ACC_STATIC) != 0;
-					boolean staticSite = (this.method.access & Opcodes.ACC_STATIC) != 0;
+                    boolean staticRedirect = (methodNode.access & Opcodes.ACC_STATIC) != 0;
+                    boolean staticSite = (this.method.access & Opcodes.ACC_STATIC) != 0;
 
-					if (methodInsnNode.getOpcode() == Opcodes.INVOKESTATIC) {
-						if (!staticRedirect) {
-							throw new TransformerException("Method redirect must be static as call site is from within a static method");
-						}
-					} else if (staticRedirect) {
-						throw new TransformerException("Method redirect must be non-static as call site is from within a non-static method");
-					}
+                    if (methodInsnNode.getOpcode() == Opcodes.INVOKESTATIC) {
+                        if (!staticRedirect) {
+                            throw new TransformerException("Method redirect must be static as call site is from within a static method");
+                        }
+                    } else if (staticRedirect) {
+                        throw new TransformerException("Method redirect must be non-static as call site is from within a non-static method");
+                    }
 
                     Validate.areMethodReturnTypesEqual(Type.getReturnType(methodInsnNode.desc), this.returnType);
 
@@ -106,13 +106,13 @@ public class MethodRedirectTransformer extends ClassTransformer {
 
     @Override
     public String toString() {
-		return String.format("MethodRedirectTransformer{targets=%s, site=%s, destination='%s'}", this.targets, this.site, this.method.name);
+        return String.format("MethodRedirectTransformer{targets=%s, site=%s, destination='%s'}", this.targets, this.site, this.method.name);
     }
 
     public static class Builder implements ClassTransformerFactory {
         @Override
         public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-			return new MethodRedirectTransformer(method, annotation);
+            return new MethodRedirectTransformer(method, annotation);
         }
     }
 }

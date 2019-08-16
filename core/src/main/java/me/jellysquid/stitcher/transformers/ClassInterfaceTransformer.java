@@ -5,23 +5,23 @@ import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.ClassNode;
 
 public class ClassInterfaceTransformer extends ClassTransformer {
-	private final String interfaceName;
+    private final String interfaceName;
 
-	public ClassInterfaceTransformer(String interfaceName, int priority) {
-		super(priority);
+    public ClassInterfaceTransformer(String interfaceName, int priority) {
+        super(priority);
 
-		this.interfaceName = interfaceName;
-	}
+        this.interfaceName = interfaceName;
+    }
 
-	@Override
-	public boolean transform(ClassNode classNode) throws TransformerException {
-		classNode.interfaces.add(this.interfaceName);
+    @Override
+    public boolean transform(ClassNode classNode) throws TransformerException {
+        classNode.interfaces.add(this.interfaceName);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String toString() {
-		return String.format("ClassInterfaceTransformer{name='%s'}", this.interfaceName);
-	}
+    @Override
+    public String toString() {
+        return String.format("ClassInterfaceTransformer{name='%s'}", this.interfaceName);
+    }
 }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NeedleMatcher {
-	private final InstructionMatcher matcher;
+    private final InstructionMatcher matcher;
 
     private final List<Integer> only;
 
@@ -18,7 +18,7 @@ public class NeedleMatcher {
 
     private final int expect;
 
-	public NeedleMatcher(InstructionMatcher matcher, List<Integer> only, SliceBuilder sliceBuilder, int expect) {
+    public NeedleMatcher(InstructionMatcher matcher, List<Integer> only, SliceBuilder sliceBuilder, int expect) {
         this.matcher = matcher;
         this.only = only;
         this.sliceBuilder = sliceBuilder;
@@ -26,7 +26,7 @@ public class NeedleMatcher {
     }
 
     public static NeedleMatcher build(AnnotationParser inject, AnnotationParser where) {
-		InstructionMatcher matcher = InstructionMatcher.create(where);
+        InstructionMatcher matcher = InstructionMatcher.create(where);
         List<Integer> only = inject.getList("only", Integer.class);
         SliceBuilder sliceBuilder = SliceBuilder.createSliceMatcher(inject.getList("slice", AnnotationNode.class));
         int expect = inject.getValue("expect", Integer.class, 1);
@@ -62,7 +62,7 @@ public class NeedleMatcher {
         return filtered;
     }
 
-	public InstructionMatcher getNeedleFactory() {
+    public InstructionMatcher getNeedleFactory() {
         return this.matcher;
     }
 }
