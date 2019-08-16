@@ -27,4 +27,8 @@ public class StitcherEnvironment {
     public static boolean isDebuggingEnabled() {
         return System.getProperty("stitcher.debug", "false").equals("true");
     }
+
+	public static boolean isTracingEnabled() {
+		return System.getProperty("stitcher.trace", "false").equals("true");
+	}
 }

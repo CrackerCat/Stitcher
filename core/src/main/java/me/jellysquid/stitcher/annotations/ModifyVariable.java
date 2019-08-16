@@ -12,4 +12,6 @@ public @interface ModifyVariable {
     Slice[] slice() default {};
 
     int[] only() default {};
+
+	int priority() default 0;
 }

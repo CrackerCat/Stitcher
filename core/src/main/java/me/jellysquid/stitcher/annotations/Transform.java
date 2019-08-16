@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface Transform {
     Class<?> value();
+
+	int priority() default 0;
 }

@@ -13,4 +13,6 @@ public @interface Inject {
     Where where();
 
     Slice[] slice() default {};
+
+	int priority() default 0;
 }

@@ -1,28 +1,40 @@
 package me.jellysquid.stitcher.patcher;
 
 import me.jellysquid.stitcher.Stitcher;
+import me.jellysquid.stitcher.StitcherEnvironment;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassPatcher {
+public final class ClassPatcher {
     private final String source;
     private final Type target;
 
-    private final List<ClassTransformer> classTransformers = new ArrayList<>();
+    private final List<ClassTransformer> transformers;
 
-    private final List<FieldNode> addedFields = new ArrayList<>();
-    private final List<MethodNode> addedMethods = new ArrayList<>();
-    private final List<String> addedInterfaces = new ArrayList<>();
-
-    public ClassPatcher(String source, Type target) {
+    ClassPatcher(String source, Type target, List<ClassTransformer> transformers) {
         this.source = source;
         this.target = target;
+
+        this.transformers = this.sortAndVerifyTransformers(new ArrayList<>(transformers));
+    }
+
+    private List<ClassTransformer> sortAndVerifyTransformers(List<ClassTransformer> transformers) {
+        // Descending order
+        transformers.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
+
+        if (StitcherEnvironment.isTracingEnabled()) {
+            Stitcher.LOGGER.trace("Transformation order for " + this.target);
+
+            for (ClassTransformer transformer : transformers) {
+                Stitcher.LOGGER.trace(" - [{}] {}", String.format("%05d", transformer.getPriority()), transformer.toString());
+            }
+        }
+
+        return transformers;
     }
 
     public final boolean transformClass(ClassNode classNode) throws TransformerException {
@@ -30,7 +42,7 @@ public class ClassPatcher {
 
         int transformations = 0;
 
-        for (ClassTransformer transformer : this.classTransformers) {
+        for (ClassTransformer transformer : this.transformers) {
             try {
                 if (transformer.transform(classNode)) {
                     transformations += 1;
@@ -39,10 +51,6 @@ public class ClassPatcher {
                 throw new TransformerException("Failed to apply transformation " + transformer, e);
             }
         }
-
-        classNode.fields.addAll(this.addedFields);
-        classNode.methods.addAll(this.addedMethods);
-        classNode.interfaces.addAll(this.addedInterfaces);
 
         long end = System.nanoTime();
 
@@ -55,24 +63,8 @@ public class ClassPatcher {
         return this.target;
     }
 
-    public void addField(FieldNode fieldNode) {
-        this.addedFields.add(fieldNode);
-    }
-
-    public void addMethod(MethodNode methodNode) {
-        this.addedMethods.add(methodNode);
-    }
-
     @Override
     public String toString() {
         return String.format("ClassPatcher{target='%s',src='%s'}", this.target, this.source);
-    }
-
-    public void addInterface(String interfaceName) {
-        this.addedInterfaces.add(interfaceName);
-    }
-
-    public void addTransformer(ClassTransformer transformer) {
-        this.classTransformers.add(transformer);
     }
 }

@@ -4,11 +4,9 @@ import me.jellysquid.stitcher.annotations.*;
 import me.jellysquid.stitcher.plugin.Plugin;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 import me.jellysquid.stitcher.remap.Remapper;
-import me.jellysquid.stitcher.transformers.MethodInjectionTransformer;
-import me.jellysquid.stitcher.transformers.MethodOverwriteTransformer;
-import me.jellysquid.stitcher.transformers.MethodRedirectTransformer;
-import me.jellysquid.stitcher.transformers.MethodVariableTransformer;
+import me.jellysquid.stitcher.transformers.*;
 import me.jellysquid.stitcher.util.AnnotationParser;
+import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -17,6 +15,7 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,32 +59,34 @@ public class ClassPatcherBuilder {
 
     private ClassPatcher buildClassPatcher(Plugin plugin, PluginGroupConfig config, ClassNode classNode) {
         Type target = null;
+		int priority = 0;
 
         for (AnnotationNode annotation : classNode.invisibleAnnotations) {
             if (annotation.desc.equals(TRANSFORM_MARKER)) {
                 AnnotationParser values = new AnnotationParser(annotation);
                 target = values.getValue("value", Type.class);
+				priority = values.getValue("priority", Integer.class, 0);
 
                 break;
             }
         }
 
         if (target == null) {
-            throw new RuntimeException("No transform target annotated on root class");
+			throw new RuntimeException("No transform target annotated on root class (did you specify an unrelated class name?)");
         }
 
         Remapper remapper = new Remapper(target);
         remapper.addFlattenedClass(classNode);
 
-        ClassPatcher patcher = new ClassPatcher("plugin[" + plugin.getConfig().getName() + "]://" + classNode.name, target);
+		List<ClassTransformer> transformers = new ArrayList<>();
 
         for (String interfaceName : classNode.interfaces) {
-            patcher.addInterface(interfaceName);
+			transformers.add(new ClassInterfaceTransformer(interfaceName, priority));
         }
 
         for (FieldNode fieldNode : classNode.fields) {
             if (!remapper.registerFieldMapping(fieldNode)) {
-                patcher.addField(fieldNode);
+				transformers.add(new ClassFieldTransformer(fieldNode, priority));
             }
         }
 
@@ -97,15 +98,19 @@ public class ClassPatcherBuilder {
             ClassTransformer transformer = this.buildMethodTransformer(config, methodNode);
 
             if (transformer != null) {
-                patcher.addTransformer(transformer);
+				transformers.add(transformer);
             } else if (!remapper.registerMethodMapping(methodNode)) {
-                patcher.addMethod(methodNode);
+				transformers.add(new ClassMethodTransformer(methodNode, priority));
             }
         }
 
         remapper.transform(classNode);
 
-        return patcher;
+		if (transformers.isEmpty()) {
+			return null;
+		}
+
+		return new ClassPatcher("plugin[" + plugin.getConfig().getName() + "]://" + classNode.name, target, transformers);
     }
 
     private ClassTransformer buildMethodTransformer(PluginGroupConfig config, MethodNode methodNode) {
@@ -123,8 +128,8 @@ public class ClassPatcherBuilder {
             if (factory != null) {
                 try {
                     methodTransformer = factory.build(config, methodNode, annotation);
-                } catch (me.jellysquid.stitcher.util.exceptions.TransformerBuildException e) {
-                    e.printStackTrace();
+				} catch (TransformerBuildException e) {
+					throw new RuntimeException("Failed to build method transformer", e);
                 }
 
                 break;

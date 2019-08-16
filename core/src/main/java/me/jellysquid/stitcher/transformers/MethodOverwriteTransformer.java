@@ -7,7 +7,6 @@ import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import me.jellysquid.stitcher.util.Validate;
-import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -15,7 +14,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodNode;
 
-public class MethodOverwriteTransformer implements ClassTransformer {
+public class MethodOverwriteTransformer extends ClassTransformer {
     private final Type returnType;
 
     private final Type[] argumentTypes;
@@ -24,11 +23,16 @@ public class MethodOverwriteTransformer implements ClassTransformer {
 
     private final InsnList instructions;
 
-	private MethodOverwriteTransformer(MethodRef target, Type returnType, Type[] argumentTypes, InsnList instructions) {
-        this.returnType = returnType;
-        this.argumentTypes = argumentTypes;
-        this.target = target;
-        this.instructions = instructions;
+	private MethodOverwriteTransformer(MethodNode method, AnnotationNode annotation) {
+		this.returnType = Type.getReturnType(method.desc);
+		this.argumentTypes = Type.getArgumentTypes(method.desc);
+		this.instructions = method.instructions;
+
+		AnnotationParser values = new AnnotationParser(annotation);
+
+		this.target = new MethodRef(values.parseAnnotation("target"));
+
+		this.priority = values.getValue("priority", Integer.class, 0);
     }
 
     @Override
@@ -50,12 +54,8 @@ public class MethodOverwriteTransformer implements ClassTransformer {
 
     public static class Builder implements ClassTransformerFactory {
         @Override
-        public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-            AnnotationParser values = new AnnotationParser(annotation);
-
-			MethodRef ref = new MethodRef(values.parseAnnotation("target"));
-
-            return new MethodOverwriteTransformer(ref, Type.getReturnType(method.desc), Type.getArgumentTypes(method.desc), method.instructions);
+		public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) {
+			return new MethodOverwriteTransformer(method, annotation);
         }
     }
 }

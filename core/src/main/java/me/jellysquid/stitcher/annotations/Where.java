@@ -18,4 +18,6 @@ public @interface Where {
     String constant() default "";
 
     int[] only() default { };
+
+	int priority() default 0;
 }

@@ -17,9 +17,8 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class MethodRedirectTransformer implements ClassTransformer {
+public class MethodRedirectTransformer extends ClassTransformer {
 	private final Collection<MethodRef> targets;
 
 	private final MethodRef site;
@@ -32,11 +31,21 @@ public class MethodRedirectTransformer implements ClassTransformer {
 
     private final LocalVariableCapture capture;
 
-	public MethodRedirectTransformer(Collection<MethodRef> targets, MethodRef site, MethodNode method, LocalVariableCapture capture) {
-        this.targets = targets;
-        this.site = site;
-        this.method = method;
-        this.capture = capture;
+	public MethodRedirectTransformer(MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
+		this.method = method;
+
+		AnnotationParser values = new AnnotationParser(annotation);
+
+		this.targets = new ArrayList<>();
+
+		for (AnnotationNode targetAnnotation : values.getList("targets", AnnotationNode.class)) {
+			this.targets.add(new MethodRef(new AnnotationParser(targetAnnotation)));
+		}
+
+		this.site = new MethodRef(values.parseAnnotation("site"));
+
+		this.capture = LocalVariableCapture.buildCaptures(method);
+		this.priority = values.getValue("priority", Integer.class, 0);
 
         this.argumentTypes = Type.getArgumentTypes(this.method.desc);
         this.returnType = Type.getReturnType(this.method.desc);
@@ -97,25 +106,13 @@ public class MethodRedirectTransformer implements ClassTransformer {
 
     @Override
     public String toString() {
-        return String.format("MethodRedirectTransformer{targets=%s, site=%s}", this.targets, this.site);
+		return String.format("MethodRedirectTransformer{targets=%s, site=%s, destination='%s'}", this.targets, this.site, this.method.name);
     }
 
     public static class Builder implements ClassTransformerFactory {
         @Override
         public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
-            AnnotationParser values = new AnnotationParser(annotation);
-
-			List<MethodRef> targets = new ArrayList<>();
-
-            for (AnnotationNode targetAnnotation : values.getList("targets", AnnotationNode.class)) {
-				targets.add(new MethodRef(new AnnotationParser(targetAnnotation)));
-            }
-
-			MethodRef site = new MethodRef(values.parseAnnotation("site"));
-
-            LocalVariableCapture captures = LocalVariableCapture.buildCaptures(method);
-
-            return new MethodRedirectTransformer(targets, site, method, captures);
+			return new MethodRedirectTransformer(method, annotation);
         }
     }
 }

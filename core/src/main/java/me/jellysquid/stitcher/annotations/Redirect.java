@@ -8,4 +8,6 @@ public @interface Redirect {
     MethodTarget[] targets();
 
     MethodTarget site();
+
+    int priority() default 0;
 }
