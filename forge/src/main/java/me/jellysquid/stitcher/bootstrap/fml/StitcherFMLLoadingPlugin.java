@@ -23,7 +23,7 @@ public class StitcherFMLLoadingPlugin implements IFMLLoadingPlugin {
     @Nullable
     @Override
     public String getSetupClass() {
-        return null;
+        return "me.jellysquid.stitcher.bootstrap.fml.StitcherFMLSetupHook";
     }
 
     @Override

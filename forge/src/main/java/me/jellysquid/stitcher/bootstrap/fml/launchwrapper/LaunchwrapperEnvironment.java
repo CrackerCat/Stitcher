@@ -1,13 +1,12 @@
 package me.jellysquid.stitcher.bootstrap.fml.launchwrapper;
 
-import me.jellysquid.stitcher.Stitcher;
 import me.jellysquid.stitcher.StitcherEnvironment;
 import me.jellysquid.stitcher.environment.Environment;
 import me.jellysquid.stitcher.plugin.PluginCandidate;
 import me.jellysquid.stitcher.plugin.PluginManifest;
-import me.jellysquid.stitcher.plugin.PluginResourceProvider;
-import me.jellysquid.stitcher.plugin.resources.ClassLoaderResourceProvider;
-import me.jellysquid.stitcher.plugin.resources.ZipFileResourceProvider;
+import me.jellysquid.stitcher.plugin.PluginResourceLoader;
+import me.jellysquid.stitcher.plugin.resources.ClassLoaderResourceLoader;
+import me.jellysquid.stitcher.plugin.resources.ZipFileResourceLoader;
 import net.minecraft.launchwrapper.Launch;
 
 import java.io.IOException;
@@ -32,11 +31,11 @@ public class LaunchwrapperEnvironment implements Environment {
 
     @Override
     public Stream<PluginCandidate> discoverCandidatePlugins() throws IOException {
-        Stream<PluginResourceProvider> jars = Files.walk(this.home.resolve("mods"))
+        Stream<PluginResourceLoader> jars = Files.walk(this.home.resolve("mods"))
                 .filter(path -> path.endsWith(".jar"))
                 .map(this::openPluginFromJAR);
 
-        Stream<PluginResourceProvider> classpath = StitcherEnvironment.getCommandLinePlugins().stream()
+        Stream<PluginResourceLoader> classpath = StitcherEnvironment.getCommandLinePlugins().stream()
                 .map(this::openPluginFromClasspath);
 
         return Stream.concat(jars, classpath)
@@ -54,7 +53,7 @@ public class LaunchwrapperEnvironment implements Environment {
         return this.home;
     }
 
-    private static PluginCandidate createCandidate(PluginResourceProvider resources) {
+    private static PluginCandidate createCandidate(PluginResourceLoader resources) {
         PluginManifest manifest = resources.getPluginManifest();
 
         if (manifest == null) {
@@ -64,15 +63,15 @@ public class LaunchwrapperEnvironment implements Environment {
         return new PluginCandidate(manifest, resources);
     }
 
-    private PluginResourceProvider openPluginFromJAR(Path path) {
+    private PluginResourceLoader openPluginFromJAR(Path path) {
         try {
-            return new ZipFileResourceProvider(path);
+            return new ZipFileResourceLoader(path);
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize resource loader", e);
         }
     }
 
-    private PluginResourceProvider openPluginFromClasspath(String name) {
-        return new ClassLoaderResourceProvider(new PluginManifest(name), LaunchwrapperEnvironment.class.getClassLoader());
+    private PluginResourceLoader openPluginFromClasspath(String name) {
+        return new ClassLoaderResourceLoader(new PluginManifest(name), LaunchwrapperEnvironment.class.getClassLoader());
     }
 }
