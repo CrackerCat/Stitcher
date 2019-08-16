@@ -1,7 +1,6 @@
-package me.jellysquid.stitcher.inject.needle;
+package me.jellysquid.stitcher.inject;
 
-import me.jellysquid.stitcher.inject.slice.SliceBuilder;
-import me.jellysquid.stitcher.inject.slice.SliceRange;
+import me.jellysquid.stitcher.matchers.InstructionMatcher;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NeedleMatcher {
-    private final NeedleFactory matcher;
+	private final InstructionMatcher matcher;
 
     private final List<Integer> only;
 
@@ -19,7 +18,7 @@ public class NeedleMatcher {
 
     private final int expect;
 
-    public NeedleMatcher(NeedleFactory matcher, List<Integer> only, SliceBuilder sliceBuilder, int expect) {
+	public NeedleMatcher(InstructionMatcher matcher, List<Integer> only, SliceBuilder sliceBuilder, int expect) {
         this.matcher = matcher;
         this.only = only;
         this.sliceBuilder = sliceBuilder;
@@ -27,7 +26,7 @@ public class NeedleMatcher {
     }
 
     public static NeedleMatcher build(AnnotationParser inject, AnnotationParser where) {
-        NeedleFactory matcher = NeedleFactory.create(where);
+		InstructionMatcher matcher = InstructionMatcher.create(where);
         List<Integer> only = inject.getList("only", Integer.class);
         SliceBuilder sliceBuilder = SliceBuilder.createSliceMatcher(inject.getList("slice", AnnotationNode.class));
         int expect = inject.getValue("expect", Integer.class, 1);
@@ -63,7 +62,7 @@ public class NeedleMatcher {
         return filtered;
     }
 
-    public NeedleFactory getNeedleFactory() {
+	public InstructionMatcher getNeedleFactory() {
         return this.matcher;
     }
 }

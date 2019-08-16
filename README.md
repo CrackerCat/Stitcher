@@ -2,24 +2,20 @@ Stitcher
 ========
 
 Stitcher is a lightweight and fast class transformation library for Java developed using the
-[ASM](https://asm.ow2.io/) library. It places utmost importance on ensuring correctness and consistency while being
-fast enough to be used during application runtime.
+[ASM](https://asm.ow2.io/) library.
 
 :warning: Stitcher is not yet considered stable. There may be lurking issues which impact stability or correctness.
 Please report any issues you find on the [issue tracker](https://github.com/jellysquid3/stitcher/issues).
 
 ## Features
-- Support for code injection, method redirection and overwriting, local variable capture, field and method shadowing,
-and trait implementation
-- Plugins are configured entirely using JSON with zero Java initialization code required
+- Support for code injection, method redirection and overwriting, local variable capture, field and method shadowing
 - Supports obfuscated environments with plugin re-obfuscation as a Gradle build task
 - Detects early class-loading errors which prevent transforming targets
-- Transformation errors are considered critical and result in process termination
 - Compiles to a single JAR for the Forge platform which weighs in just under 120KB with dependencies included
 
 ### Upcoming
-- [ ] Dump transformed class bytecode on errors
 - [ ] Control flow modification (break from branches and loops, return early from methods, etc)
+- [ ] Dump transformed class bytecode on errors
 - [ ] Debugging information for injected bytecode in IDEs
 - [ ] Extended injection bytecode validation
 
@@ -34,8 +30,6 @@ Clone the repository and use the provided Gradle wrapper to perform a build with
 ```
 ./gradlew build
 ```
-
-Build artifacts can be found in the `build/*module*/libs` directory within the project root.
 
 ## License
 

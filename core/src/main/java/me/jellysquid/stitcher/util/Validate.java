@@ -1,7 +1,6 @@
 package me.jellysquid.stitcher.util;
 
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import java.util.Arrays;

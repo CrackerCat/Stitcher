@@ -2,7 +2,7 @@ package me.jellysquid.stitcher.remap;
 
 import me.jellysquid.stitcher.annotations.Shadow;
 import me.jellysquid.stitcher.annotations.Transform;
-import me.jellysquid.stitcher.inject.slice.SliceRange;
+import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;

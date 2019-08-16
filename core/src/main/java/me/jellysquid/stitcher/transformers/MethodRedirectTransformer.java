@@ -1,12 +1,11 @@
-package me.jellysquid.stitcher.transformers.methods;
+package me.jellysquid.stitcher.transformers;
 
-import me.jellysquid.stitcher.annotations.Redirect;
 import me.jellysquid.stitcher.capture.LocalVariableCapture;
-import me.jellysquid.stitcher.inject.slice.SliceRange;
+import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
-import me.jellysquid.stitcher.remap.references.MethodReference;
+import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import me.jellysquid.stitcher.util.Validate;
@@ -21,9 +20,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class MethodRedirectTransformer implements ClassTransformer {
-    private final Collection<MethodReference> targets;
+	private final Collection<MethodRef> targets;
 
-    private final MethodReference site;
+	private final MethodRef site;
 
     private final MethodNode method;
 
@@ -33,7 +32,7 @@ public class MethodRedirectTransformer implements ClassTransformer {
 
     private final LocalVariableCapture capture;
 
-    public MethodRedirectTransformer(Collection<MethodReference> targets, MethodReference site, MethodNode method, LocalVariableCapture capture) {
+	public MethodRedirectTransformer(Collection<MethodRef> targets, MethodRef site, MethodNode method, LocalVariableCapture capture) {
         this.targets = targets;
         this.site = site;
         this.method = method;
@@ -47,7 +46,7 @@ public class MethodRedirectTransformer implements ClassTransformer {
     public boolean transform(ClassNode classNode) throws TransformerException {
         boolean modified = false;
 
-        for (MethodReference target : this.targets) {
+		for (MethodRef target : this.targets) {
             modified |= this.apply(ASMHelper.findMethod(classNode, target));
         }
 
@@ -101,13 +100,13 @@ public class MethodRedirectTransformer implements ClassTransformer {
         public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
             AnnotationParser values = new AnnotationParser(annotation);
 
-            List<MethodReference> targets = new ArrayList<>();
+			List<MethodRef> targets = new ArrayList<>();
 
             for (AnnotationNode targetAnnotation : values.getList("targets", AnnotationNode.class)) {
-                targets.add(new MethodReference(new AnnotationParser(targetAnnotation)));
+				targets.add(new MethodRef(new AnnotationParser(targetAnnotation)));
             }
 
-            MethodReference site = new MethodReference(values.parseAnnotation("site"));
+			MethodRef site = new MethodRef(values.parseAnnotation("site"));
 
             LocalVariableCapture captures = LocalVariableCapture.buildCaptures(method);
 

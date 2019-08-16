@@ -1,16 +1,15 @@
-package me.jellysquid.stitcher.remap.references;
+package me.jellysquid.stitcher.remap;
 
 import me.jellysquid.stitcher.util.AnnotationParser;
-import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-public class MethodReference {
+public class MethodRef {
     private final String name;
 
     private final String desc;
 
-    public MethodReference(AnnotationParser ann) {
+    public MethodRef(AnnotationParser ann) {
         this.name = ann.getValue("value", String.class);
         this.desc = ann.getValue("desc", String.class);
     }

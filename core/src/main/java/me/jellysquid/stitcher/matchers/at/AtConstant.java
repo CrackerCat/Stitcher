@@ -1,11 +1,12 @@
-package me.jellysquid.stitcher.inject;
+package me.jellysquid.stitcher.matchers.at;
 
+import me.jellysquid.stitcher.matchers.SimpleInstructionMatcher;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-public class AtConstant extends InstructionMatcher {
+public class AtConstant extends SimpleInstructionMatcher {
     private final Object data;
 
     public AtConstant(AnnotationParser annotation) {

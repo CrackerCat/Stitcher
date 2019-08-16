@@ -1,6 +1,6 @@
-package me.jellysquid.stitcher.inject.slice;
+package me.jellysquid.stitcher.inject;
 
-import me.jellysquid.stitcher.inject.needle.NeedleFactory;
+import me.jellysquid.stitcher.matchers.InstructionMatcher;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -9,9 +9,9 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.List;
 
 public class SliceBuilder {
-    private final NeedleFactory start, end;
+	private final InstructionMatcher start, end;
 
-    private SliceBuilder(NeedleFactory start, NeedleFactory end) {
+	private SliceBuilder(InstructionMatcher start, InstructionMatcher end) {
         this.start = start;
         this.end = end;
     }
@@ -25,8 +25,8 @@ public class SliceBuilder {
     }
 
     private static SliceBuilder createSliceMatcher(AnnotationParser values) {
-        NeedleFactory startMatcher = NeedleFactory.create(values.parseAnnotation("start"));
-        NeedleFactory endMatcher = NeedleFactory.create(values.parseAnnotation("end"));
+		InstructionMatcher startMatcher = InstructionMatcher.create(values.parseAnnotation("start"));
+		InstructionMatcher endMatcher = InstructionMatcher.create(values.parseAnnotation("end"));
 
         return new SliceBuilder(startMatcher, endMatcher);
     }

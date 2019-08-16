@@ -8,7 +8,7 @@ import java.util.Collection;
 public class StitcherEnvironment {
     private static final String CLIENT_CLASS_MARKER = "net/minecraft/client/Minecraft.class";
 
-    public static final Dist DIST = StitcherEnvironment.isClientClassMarkerPresent() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+	public static final Dist DIST = StitcherEnvironment.isClientClassMarkerPresent() ? Dist.CLIENT : Dist.SERVER;
 
     private static boolean isClientClassMarkerPresent() {
         return StitcherEnvironment.class.getClassLoader().getResource(CLIENT_CLASS_MARKER) != null;

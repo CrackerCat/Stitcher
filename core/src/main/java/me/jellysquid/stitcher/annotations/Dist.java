@@ -2,7 +2,7 @@ package me.jellysquid.stitcher.annotations;
 
 public enum Dist {
     CLIENT,
-    DEDICATED_SERVER,
+	SERVER,
     ANY;
 
     public boolean applies(Dist other) {

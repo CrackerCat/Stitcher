@@ -1,12 +1,13 @@
-package me.jellysquid.stitcher.inject;
+package me.jellysquid.stitcher.matchers.at;
 
+import me.jellysquid.stitcher.matchers.SimpleInstructionMatcher;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-public class AtVariable extends InstructionMatcher {
+public class AtVariable extends SimpleInstructionMatcher {
     private final Operation operation;
 
     private final int index;

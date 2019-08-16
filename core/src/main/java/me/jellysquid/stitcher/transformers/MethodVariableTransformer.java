@@ -1,17 +1,17 @@
-package me.jellysquid.stitcher.transformers.methods.inject;
+package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.capture.LocalVariableCapture;
-import me.jellysquid.stitcher.inject.AtVariable;
-import me.jellysquid.stitcher.inject.needle.Needle;
-import me.jellysquid.stitcher.inject.needle.NeedleMatcher;
+import me.jellysquid.stitcher.inject.Needle;
+import me.jellysquid.stitcher.inject.NeedleMatcher;
+import me.jellysquid.stitcher.matchers.at.AtVariable;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
-import me.jellysquid.stitcher.remap.references.MethodReference;
+import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 public class MethodVariableTransformer extends MethodInjectionTransformer {
-    private MethodVariableTransformer(MethodReference target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher needleMatcher, int offset) {
+    private MethodVariableTransformer(MethodRef target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher needleMatcher, int offset) {
         super(target, localCapture, method, needleMatcher, offset);
     }
 
@@ -24,7 +24,7 @@ public class MethodVariableTransformer extends MethodInjectionTransformer {
 
     public static class Builder extends MethodInjectionTransformer.Builder {
         @Override
-        protected ClassTransformer create(MethodReference target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher matcher, int offset) {
+        protected ClassTransformer create(MethodRef target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher matcher, int offset) {
             if (!(matcher.getNeedleFactory() instanceof AtVariable)) {
                 throw new IllegalArgumentException("Matcher must be either LOAD or STORE");
             }

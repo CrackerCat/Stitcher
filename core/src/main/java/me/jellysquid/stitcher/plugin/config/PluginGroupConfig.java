@@ -1,6 +1,5 @@
 package me.jellysquid.stitcher.plugin.config;
 
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import me.jellysquid.stitcher.annotations.Dist;
@@ -15,19 +14,20 @@ public class PluginGroupConfig {
 
     private final Dist dist;
 
-    private final List<String> transformers;
+	private final List<String> transformers = new ArrayList<>();
 
     public PluginGroupConfig(String name, JsonObject json) {
         this.name = name;
         this.packageRoot = json.get("package").asString();
+
         this.dist = Dist.fromName(json.getString("side", Dist.ANY.name()));
 
-        JsonArray transformers = json.get("transformers").asArray();
+		JsonValue transformers = json.get("transformers");
 
-        this.transformers = new ArrayList<>(transformers.size());
-
-        for (JsonValue entry : transformers) {
-            this.transformers.add(entry.asString());
+		if (transformers != null) {
+			for (JsonValue entry : transformers.asArray()) {
+				this.transformers.add(entry.asString());
+			}
         }
     }
 

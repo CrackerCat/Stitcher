@@ -1,15 +1,14 @@
-package me.jellysquid.stitcher.inject;
+package me.jellysquid.stitcher.matchers;
 
-import me.jellysquid.stitcher.inject.needle.Needle;
-import me.jellysquid.stitcher.inject.needle.NeedleFactory;
-import me.jellysquid.stitcher.inject.slice.SliceRange;
+import me.jellysquid.stitcher.inject.Needle;
+import me.jellysquid.stitcher.inject.SliceRange;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class InstructionMatcher implements NeedleFactory {
+public abstract class SimpleInstructionMatcher implements InstructionMatcher {
     @Override
     public List<Needle> findAll(MethodNode method, SliceRange slice) {
         List<Needle> needles = new ArrayList<>();

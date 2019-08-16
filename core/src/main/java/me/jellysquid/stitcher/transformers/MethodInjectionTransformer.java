@@ -1,25 +1,23 @@
-package me.jellysquid.stitcher.transformers.methods.inject;
+package me.jellysquid.stitcher.transformers;
 
-import me.jellysquid.stitcher.annotations.Inject;
 import me.jellysquid.stitcher.capture.LocalVariableCapture;
-import me.jellysquid.stitcher.inject.needle.NeedleMatcher;
-import me.jellysquid.stitcher.inject.needle.Needle;
+import me.jellysquid.stitcher.inject.Needle;
+import me.jellysquid.stitcher.inject.NeedleMatcher;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
-import me.jellysquid.stitcher.remap.references.MethodReference;
+import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.List;
 
 public class MethodInjectionTransformer implements ClassTransformer {
-    protected final MethodReference target;
+    protected final MethodRef target;
 
     protected final LocalVariableCapture localCapture;
 
@@ -29,7 +27,7 @@ public class MethodInjectionTransformer implements ClassTransformer {
 
     protected final int offset;
 
-    protected MethodInjectionTransformer(MethodReference target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher matcher, int offset) {
+    protected MethodInjectionTransformer(MethodRef target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher matcher, int offset) {
         this.target = target;
         this.localCapture = localCapture;
         this.method = method;
@@ -94,7 +92,7 @@ public class MethodInjectionTransformer implements ClassTransformer {
         public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
             AnnotationParser inject = new AnnotationParser(annotation);
 
-            MethodReference ref = new MethodReference(inject.parseAnnotation("target"));
+            MethodRef ref = new MethodRef(inject.parseAnnotation("target"));
             AnnotationParser where = inject.parseAnnotation("where");
 
             NeedleMatcher matcher = NeedleMatcher.build(inject, where);
@@ -105,7 +103,7 @@ public class MethodInjectionTransformer implements ClassTransformer {
             return this.create(ref, captures, method, matcher, offset);
         }
 
-        protected ClassTransformer create(MethodReference target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher matcher, int offset) {
+        protected ClassTransformer create(MethodRef target, LocalVariableCapture localCapture, MethodNode method, NeedleMatcher matcher, int offset) {
             return new MethodInjectionTransformer(target, localCapture, method, matcher, offset);
         }
     }

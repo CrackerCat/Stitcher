@@ -1,15 +1,13 @@
 package me.jellysquid.stitcher.patcher;
 
-import me.jellysquid.stitcher.StitcherEnvironment;
 import me.jellysquid.stitcher.annotations.*;
-import me.jellysquid.stitcher.annotations.Dist;
 import me.jellysquid.stitcher.plugin.Plugin;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
 import me.jellysquid.stitcher.remap.Remapper;
-import me.jellysquid.stitcher.transformers.methods.MethodOverwriteTransformer;
-import me.jellysquid.stitcher.transformers.methods.MethodRedirectTransformer;
-import me.jellysquid.stitcher.transformers.methods.inject.MethodInjectionTransformer;
-import me.jellysquid.stitcher.transformers.methods.inject.MethodVariableTransformer;
+import me.jellysquid.stitcher.transformers.MethodInjectionTransformer;
+import me.jellysquid.stitcher.transformers.MethodOverwriteTransformer;
+import me.jellysquid.stitcher.transformers.MethodRedirectTransformer;
+import me.jellysquid.stitcher.transformers.MethodVariableTransformer;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;

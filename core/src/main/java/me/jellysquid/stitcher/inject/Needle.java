@@ -1,4 +1,4 @@
-package me.jellysquid.stitcher.inject.needle;
+package me.jellysquid.stitcher.inject;
 
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;

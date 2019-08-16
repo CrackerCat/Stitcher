@@ -1,18 +1,18 @@
-package me.jellysquid.stitcher.inject.needle;
+package me.jellysquid.stitcher.matchers;
 
 import me.jellysquid.stitcher.annotations.At;
-import me.jellysquid.stitcher.inject.*;
-import me.jellysquid.stitcher.inject.slice.SliceRange;
+import me.jellysquid.stitcher.inject.Needle;
+import me.jellysquid.stitcher.inject.SliceRange;
+import me.jellysquid.stitcher.matchers.at.*;
 import me.jellysquid.stitcher.util.AnnotationParser;
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.List;
 
-public interface NeedleFactory {
+public interface InstructionMatcher {
     List<Needle> findAll(MethodNode method, SliceRange slice);
 
-    static NeedleFactory create(AnnotationParser where) {
+	static InstructionMatcher create(AnnotationParser where) {
         At at = where.getEnum("at", At.class);
 
         switch (at) {

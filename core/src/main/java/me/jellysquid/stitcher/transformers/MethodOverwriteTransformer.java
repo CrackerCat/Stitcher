@@ -1,9 +1,9 @@
-package me.jellysquid.stitcher.transformers.methods;
+package me.jellysquid.stitcher.transformers;
 
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.patcher.ClassTransformerFactory;
 import me.jellysquid.stitcher.plugin.config.PluginGroupConfig;
-import me.jellysquid.stitcher.remap.references.MethodReference;
+import me.jellysquid.stitcher.remap.MethodRef;
 import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
 import me.jellysquid.stitcher.util.Validate;
@@ -20,11 +20,11 @@ public class MethodOverwriteTransformer implements ClassTransformer {
 
     private final Type[] argumentTypes;
 
-    private final MethodReference target;
+	private final MethodRef target;
 
     private final InsnList instructions;
 
-    private MethodOverwriteTransformer(MethodReference target, Type returnType, Type[] argumentTypes, InsnList instructions) {
+	private MethodOverwriteTransformer(MethodRef target, Type returnType, Type[] argumentTypes, InsnList instructions) {
         this.returnType = returnType;
         this.argumentTypes = argumentTypes;
         this.target = target;
@@ -53,7 +53,7 @@ public class MethodOverwriteTransformer implements ClassTransformer {
         public ClassTransformer build(PluginGroupConfig config, MethodNode method, AnnotationNode annotation) throws TransformerBuildException {
             AnnotationParser values = new AnnotationParser(annotation);
 
-            MethodReference ref = new MethodReference(values.parseAnnotation("target"));
+			MethodRef ref = new MethodRef(values.parseAnnotation("target"));
 
             return new MethodOverwriteTransformer(ref, Type.getReturnType(method.desc), Type.getArgumentTypes(method.desc), method.instructions);
         }
