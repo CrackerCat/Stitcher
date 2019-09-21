@@ -25,4 +25,4 @@ Clone the repository and use the provided Gradle wrapper to perform a build with
 ## License
 
 Stitcher is free and open-source software licensed under the
-[GNU GPL v3.0 license](https://www.gnu.org/licenses/gpl-3.0.en.html).
+[GNU LGPL v3.0 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).
