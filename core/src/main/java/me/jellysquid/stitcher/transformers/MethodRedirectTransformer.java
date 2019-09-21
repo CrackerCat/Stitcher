@@ -5,8 +5,8 @@ import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
-import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
+import me.jellysquid.stitcher.util.Methods;
 import me.jellysquid.stitcher.util.Validate;
 import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
@@ -57,7 +57,7 @@ public class MethodRedirectTransformer extends ClassTransformer {
         boolean modified = false;
 
         for (MethodRef target : this.targets) {
-            modified |= this.apply(classNode, ASMHelper.findMethod(classNode, target));
+            modified |= this.apply(classNode, Methods.findMethod(classNode, target));
         }
 
         if (modified) {

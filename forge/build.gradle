@@ -23,6 +23,8 @@ shadowJar {
     dependencies {
         exclude(dependency('org.ow2.asm:asm-debug-all:.*'))
         exclude(dependency('org.apache.logging.log4j:.*'))
+        exclude(dependency('com.eclipsesource.minimal-json:minimal-json:.*'))
+        exclude(dependency('it.unimi.dsi:fastutil:.*'))
     }
 
     classifier = "universal"

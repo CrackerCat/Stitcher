@@ -1,9 +1,12 @@
 package me.jellysquid.stitcher.plugin;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface PluginResourceLoader {
+    int BUFFER_SIZE = 1024 * 4;
+
     /**
      * Returns the manifest of this plugin.
      *
@@ -20,7 +23,21 @@ public interface PluginResourceLoader {
      * @return A byte array containing all the bytes of the resource
      * @throws IOException If an I/O exception occurs during reading or if the resource could not be found
      */
-    byte[] getBytes(String name) throws IOException;
+    default byte[] getBytes(String name) throws IOException {
+        InputStream in = this.getStream(name);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[BUFFER_SIZE];
+
+        int len;
+
+        while ((len = in.read(buffer)) != -1) {
+            bout.write(buffer, 0, len);
+        }
+
+        return bout.toByteArray();
+    }
 
     /**
      * Returns a {@link InputStream} which will read bytes from the specified resource contained within the plugin.

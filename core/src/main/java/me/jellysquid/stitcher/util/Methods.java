@@ -5,7 +5,7 @@ import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-public class ASMHelper {
+public class Methods {
     /**
      * Locates a method within a {@link ClassNode} by a {@link MethodRef}.
      *
@@ -21,6 +21,6 @@ public class ASMHelper {
             }
         }
 
-        throw new TransformerException("Couldn't find method matching reference " + ref.toString());
+        throw new TransformerException(String.format("Couldn't find method matching reference %s", ref.toString()));
     }
 }

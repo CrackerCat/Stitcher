@@ -20,6 +20,6 @@ public enum Dist {
             }
         }
 
-        throw new IllegalArgumentException("No distribution exists with name: '" + name + "'");
+        throw new IllegalArgumentException(String.format("No distribution exists with name: '%s'", name));
     }
 }

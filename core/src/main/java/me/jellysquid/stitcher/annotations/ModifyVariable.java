@@ -5,7 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface ModifyVariable {
-    MethodTarget target();
+    Target target();
 
     Where where();
 

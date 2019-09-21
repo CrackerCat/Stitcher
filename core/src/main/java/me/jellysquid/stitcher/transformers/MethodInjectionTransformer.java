@@ -6,8 +6,8 @@ import me.jellysquid.stitcher.inject.NeedleMatcher;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
-import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
+import me.jellysquid.stitcher.util.Methods;
 import me.jellysquid.stitcher.util.exceptions.TransformerBuildException;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Opcodes;
@@ -47,7 +47,7 @@ public class MethodInjectionTransformer extends ClassTransformer {
 
     @Override
     public boolean transform(ClassNode classNode) throws TransformerException {
-        MethodNode methodNode = ASMHelper.findMethod(classNode, this.target);
+        MethodNode methodNode = Methods.findMethod(classNode, this.target);
 
         List<Needle> sites = this.matcher.findAll(methodNode);
 
@@ -85,7 +85,7 @@ public class MethodInjectionTransformer extends ClassTransformer {
         hash = 37 * hash + method.desc.hashCode();
         hash = 37 * hash + method.access;
 
-        return method.name + "$" + Integer.toString(Math.abs(hash), 36);
+        return String.format("%s$%s", method.name, Integer.toString(Math.abs(hash), 36));
     }
 
     @Override

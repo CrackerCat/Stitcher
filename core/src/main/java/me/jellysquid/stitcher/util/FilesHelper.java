@@ -14,7 +14,7 @@ public class FilesHelper {
         }
 
         if (!Files.isDirectory(path)) {
-            throw new IOException("Not a directory: " + path);
+            throw new IOException(String.format("Not a directory: %s", path));
         }
 
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

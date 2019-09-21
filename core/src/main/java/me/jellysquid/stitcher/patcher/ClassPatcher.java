@@ -25,7 +25,7 @@ public final class ClassPatcher {
         this.transformers.sort((o1, o2) -> Integer.compare(o2.getPriority(), o1.getPriority()));
 
         if (StitcherEnvironment.isTracingEnabled()) {
-            Stitcher.LOGGER.trace("Sorting transformers for target: " + this.target);
+            Stitcher.LOGGER.trace(String.format("Sorting transformers for target: %s", this.target));
 
             for (ClassTransformer transformer : this.transformers) {
                 Stitcher.LOGGER.trace(" - [{}] {}", String.format("%05d", transformer.getPriority()), transformer.toString());
@@ -50,7 +50,7 @@ public final class ClassPatcher {
                     transformations += 1;
                 }
             } catch (Exception e) {
-                throw new TransformerException("Failed to apply transformation " + transformer, e);
+                throw new TransformerException(String.format("Failed to apply transformation %s", transformer), e);
             }
         }
 

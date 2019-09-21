@@ -1,6 +1,6 @@
 package me.jellysquid.stitcher.matchers;
 
-import me.jellysquid.stitcher.annotations.At;
+import me.jellysquid.stitcher.annotations.Where;
 import me.jellysquid.stitcher.inject.Needle;
 import me.jellysquid.stitcher.inject.SliceRange;
 import me.jellysquid.stitcher.matchers.at.*;
@@ -13,7 +13,7 @@ public interface InstructionMatcher {
     List<Needle> findAll(MethodNode method, SliceRange slice);
 
     static InstructionMatcher create(AnnotationParser where) {
-        At at = where.getEnum("at", At.class);
+        Where.At at = where.getEnum("at", Where.At.class);
 
         switch (at) {
             case TAIL:
@@ -29,7 +29,7 @@ public interface InstructionMatcher {
             case STORE:
                 return new AtVariable(AtVariable.Operation.STORE, where);
             default:
-                throw new IllegalArgumentException("Cannot instantiate instruction matcher for clause At#" + at.name());
+                throw new IllegalArgumentException(String.format("Cannot instantiate instruction matcher for clause At#%s", at.name()));
         }
     }
 

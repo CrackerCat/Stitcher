@@ -21,7 +21,7 @@ public class MethodRef {
 
     @Override
     public String toString() {
-        return this.owner + "." + this.name + this.desc;
+        return String.format("%s.%s%s", this.owner, this.name, this.desc);
     }
 
     public boolean matches(MethodInsnNode node) {

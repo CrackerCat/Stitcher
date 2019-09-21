@@ -3,8 +3,8 @@ package me.jellysquid.stitcher.transformers;
 import me.jellysquid.stitcher.patcher.ClassTransformer;
 import me.jellysquid.stitcher.plugin.PluginResource;
 import me.jellysquid.stitcher.remap.MethodRef;
-import me.jellysquid.stitcher.util.ASMHelper;
 import me.jellysquid.stitcher.util.AnnotationParser;
+import me.jellysquid.stitcher.util.Methods;
 import me.jellysquid.stitcher.util.Validate;
 import me.jellysquid.stitcher.util.exceptions.TransformerException;
 import org.objectweb.asm.Type;
@@ -38,7 +38,7 @@ public class MethodOverwriteTransformer extends ClassTransformer {
 
     @Override
     public boolean transform(ClassNode classNode) throws TransformerException {
-        MethodNode methodNode = ASMHelper.findMethod(classNode, this.target);
+        MethodNode methodNode = Methods.findMethod(classNode, this.target);
 
         Validate.areMethodArgumentsEqual(Type.getArgumentTypes(methodNode.desc), this.argumentTypes);
         Validate.areMethodReturnTypesEqual(Type.getReturnType(methodNode.desc), this.returnType);

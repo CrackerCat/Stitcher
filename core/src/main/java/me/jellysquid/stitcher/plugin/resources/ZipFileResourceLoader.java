@@ -2,7 +2,6 @@ package me.jellysquid.stitcher.plugin.resources;
 
 import me.jellysquid.stitcher.plugin.PluginManifest;
 import me.jellysquid.stitcher.plugin.PluginResourceLoader;
-import me.jellysquid.stitcher.util.StreamHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,15 +44,6 @@ public class ZipFileResourceLoader implements PluginResourceLoader {
     }
 
     @Override
-    public byte[] getBytes(String name) throws IOException {
-        ZipEntry entry = this.getZipEntry(name);
-
-        try (InputStream in = this.file.getInputStream(entry)) {
-            return StreamHelper.toByteArray(in);
-        }
-    }
-
-    @Override
     public InputStream getStream(String name) throws IOException {
         return this.file.getInputStream(this.getZipEntry(name));
     }
@@ -72,7 +62,7 @@ public class ZipFileResourceLoader implements PluginResourceLoader {
         ZipEntry entry = this.file.getEntry(name);
 
         if (entry == null) {
-            throw new IOException("Entry does not exist: " + name);
+            throw new IOException(String.format("Entry does not exist: %s", name));
         }
 
         return entry;

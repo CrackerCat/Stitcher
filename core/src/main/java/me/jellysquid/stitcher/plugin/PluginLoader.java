@@ -40,7 +40,7 @@ public class PluginLoader {
         PluginManifest manifest = candidate.getManifest();
         PluginResourceLoader resources = candidate.getResources();
 
-        String configName = "stitcher." + manifest.getName() + ".json";
+        String configName = String.format("stitcher.%s.json", manifest.getName());
 
         if (!resources.exists(configName)) {
             Stitcher.LOGGER.warn("Plugin configuration file '{}' is missing from plugin resources (plugin: {})", configName, candidate);
@@ -70,7 +70,7 @@ public class PluginLoader {
     }
 
     private static PluginGroupConfig loadTransformerConfig(PluginResourceLoader resources, PluginConfig pluginConfig, String group) {
-        String path = "stitcher." + pluginConfig.getName() + "." + group + ".json";
+        String path = String.format("stitcher.%s.%s.json", pluginConfig.getName(), group);
 
         try (Reader reader = new InputStreamReader(resources.getStream(path))) {
             return new PluginGroupConfig(group, Json.parse(reader).asObject());

@@ -45,6 +45,18 @@ public class Stitcher {
     }
 
     /**
+     * @return The current global instance of {@link Stitcher}. If {@link Stitcher#init(Environment)} has not been
+     * called yet, this method will throw an {@link IllegalStateException}.
+     */
+    public static Stitcher instance() {
+        if (instance == null) {
+            throw new IllegalStateException("Global instance is not initialized yet");
+        }
+
+        return instance;
+    }
+
+    /**
      * Performs plugin discovery and initializes any found plugins. This logic has been moved outside of the constructor
      * as {@link Stitcher#init(Environment)} may be called during construction but before setup.
      */
@@ -66,7 +78,7 @@ public class Stitcher {
             try {
                 this.loadPlugin(plugin);
             } catch (Exception e) {
-                throw new RuntimeException("Could not load plugin: " + plugin, e);
+                throw new RuntimeException(String.format("Could not load plugin: %s", plugin), e);
             }
         }
 

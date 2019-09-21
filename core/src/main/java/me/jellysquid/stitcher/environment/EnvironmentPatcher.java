@@ -77,7 +77,7 @@ public class EnvironmentPatcher {
         try {
             modified = patcher.transformClass(classNode);
         } catch (TransformerException e) {
-            throw new RuntimeException("Failed to transform class using transformer " + patcher, e);
+            throw new RuntimeException(String.format("Failed to transform class using transformer %s", patcher), e);
         }
 
         if (modified) {
@@ -116,8 +116,8 @@ public class EnvironmentPatcher {
         List<ClassTransformer> transformers = new ArrayList<>();
 
         for (String transformer : config.getTransformers()) {
-            String qualifiedName = config.getPackageRoot() + "." + transformer;
-            String bytecodePath = qualifiedName.replace('.', '/') + ".class";
+            String qualifiedName = String.format("%s.%s", config.getPackageRoot(), transformer);
+            String bytecodePath = String.format("%s.class", qualifiedName.replace('.', '/'));
 
             PluginResource resource = plugin.getResource(bytecodePath);
 
@@ -139,7 +139,7 @@ public class EnvironmentPatcher {
             ClassPatcher patcher = this.getPatcher(data.getTarget());
             patcher.addTransformers(data.getTransformers());
         } catch (Exception e) {
-            throw new RuntimeException("Could not add class patcher to environment: " + resource.getPath(), e);
+            throw new RuntimeException(String.format("Could not add class patcher to environment: %s", resource.getPath()), e);
         }
 
         this.transformers.addAll(data.getTransformers());
@@ -161,7 +161,7 @@ public class EnvironmentPatcher {
         ClassPatcher patcher = new ClassPatcher(type);
 
         if (this.environment.isClassLoaded(type.getClassName())) {
-            throw new RuntimeException("The class " + type.getClassName() + " has already been loaded in this environment");
+            throw new RuntimeException(String.format("The class %s has already been loaded in this environment", type.getClassName()));
         }
 
         this.patchersByClass.put(type.getClassName(), patcher);

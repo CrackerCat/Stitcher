@@ -19,7 +19,7 @@ public class AtConstant extends SimpleInstructionMatcher {
         String[] components = text.split(":");
 
         if (components.length != 2) {
-            throw new IllegalArgumentException("Expected type:value pair, found " + text);
+            throw new IllegalArgumentException(String.format("Expected type:value pair, found %s", text));
         }
 
         String type = components[0];
@@ -37,7 +37,7 @@ public class AtConstant extends SimpleInstructionMatcher {
             case "double":
                 return Double.valueOf(value);
             default:
-                throw new IllegalArgumentException("Unsupported constant type: " + type);
+                throw new IllegalArgumentException(String.format("Unsupported constant type: %s", type));
         }
     }
 

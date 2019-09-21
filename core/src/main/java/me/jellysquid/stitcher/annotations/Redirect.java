@@ -5,9 +5,9 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.CLASS)
 public @interface Redirect {
-    MethodTarget[] targets();
+    Target[] targets();
 
-    MethodTarget site();
+    Target site();
 
     int priority() default 0;
 }

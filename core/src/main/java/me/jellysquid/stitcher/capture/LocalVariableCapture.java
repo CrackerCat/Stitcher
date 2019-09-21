@@ -30,14 +30,16 @@ public class LocalVariableCapture {
         List<CapturedVariable> inputs = new ArrayList<>();
 
         List<AnnotationNode>[] annotations = methodNode.invisibleParameterAnnotations;
+
         Type[] types = Type.getArgumentTypes(methodNode.desc);
 
         for (int i = 0; i < annotations.length; i++) {
-            List<AnnotationNode> ann = annotations[i];
-            Type type = types[i];
+            List<AnnotationNode> methodParameterAnnotations = annotations[i];
 
-            if (ann != null && !ann.isEmpty()) {
-                for (AnnotationNode parameterAnnotation : ann) {
+            if (methodParameterAnnotations != null && !methodParameterAnnotations.isEmpty()) {
+                Type type = types[i];
+
+                for (AnnotationNode parameterAnnotation : methodParameterAnnotations) {
                     if (!parameterAnnotation.desc.equals(CAPTURE_MARKER)) {
                         continue;
                     }

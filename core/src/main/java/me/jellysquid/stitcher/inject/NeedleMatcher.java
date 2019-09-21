@@ -40,7 +40,7 @@ public class NeedleMatcher {
         List<Needle> needles = this.matcher.findAll(methodNode, range);
 
         if (this.expect > 0 && needles.size() < this.expect) {
-            throw new TransformerException("Expected " + this.expect + " match(es), but found " + needles.size() + " matches for clause");
+            throw new TransformerException(String.format("Expected %d match(es), but found %d matches for clause", this.expect, needles.size()));
         }
 
         List<Needle> filtered;
@@ -52,7 +52,7 @@ public class NeedleMatcher {
 
             for (int ordinal : this.only) {
                 if (ordinal >= needles.size() || ordinal < 0) {
-                    throw new TransformerException("Selected needle index " + ordinal + " is not contained in [0," + needles.size() + ")");
+                    throw new TransformerException(String.format("Selected needle index %d is not contained in [0,%d)", ordinal, needles.size()));
                 }
 
                 filtered.add(needles.get(ordinal));

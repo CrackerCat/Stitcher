@@ -2,7 +2,6 @@ package me.jellysquid.stitcher.plugin.resources;
 
 import me.jellysquid.stitcher.plugin.PluginManifest;
 import me.jellysquid.stitcher.plugin.PluginResourceLoader;
-import me.jellysquid.stitcher.util.StreamHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,18 +22,11 @@ public class ClassLoaderResourceLoader implements PluginResourceLoader {
     }
 
     @Override
-    public byte[] getBytes(String name) throws IOException {
-        try (InputStream in = this.getStream(name)) {
-            return StreamHelper.toByteArray(in);
-        }
-    }
-
-    @Override
     public InputStream getStream(String name) throws IOException {
         InputStream stream = this.classLoader.getResourceAsStream(name);
 
         if (stream == null) {
-            throw new IOException("Could not find resource: " + name);
+            throw new IOException(String.format("Could not find resource: %s", name));
         }
 
         return stream;

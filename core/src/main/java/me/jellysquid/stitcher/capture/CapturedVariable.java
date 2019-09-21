@@ -14,16 +14,16 @@ public class CapturedVariable {
 
     private final int localIndex;
 
-    CapturedVariable(Type argumentType, int localIndex) {
+    public CapturedVariable(Type argumentType, int localIndex) {
         this.argumentType = argumentType;
         this.argumentSort = argumentType.getSort();
         this.localIndex = localIndex;
     }
 
-    private void validateLocalVariableTable(MethodNode methodNode) throws TransformerException {
+    public VarInsnNode createLoadInstruction(MethodNode methodNode) throws TransformerException {
         if (this.localIndex > methodNode.maxLocals) {
-            throw new TransformerException("Cannot capture local variable at index " + this.localIndex +
-                    " because it exceeds the size of the local variable table (table size: " + methodNode.maxLocals + ")");
+            throw new TransformerException(String.format("Cannot capture local variable at index %d because it" +
+                    "exceeds the size of the local variable table (table size: %d)", this.localIndex, methodNode.maxLocals));
         }
 
         LocalVariableNode node = null;
@@ -37,18 +37,13 @@ public class CapturedVariable {
         }
 
         if (node == null) {
-            throw new TransformerException("The local variable at index " + this.localIndex + " does not exist");
+            throw new TransformerException(String.format("The local variable at index %d does not exist", this.localIndex));
         }
 
         if (!this.argumentType.getDescriptor().equals(node.desc)) {
-            throw new TransformerException("Cannot capture local variable at index " + this.localIndex +
-                    " because the destination parameter is of the incorrect type (expected: " + this.argumentType + "," +
-                    " found: " + node.desc + ")");
+            throw new TransformerException(String.format("Cannot capture local variable at index %d because the " +
+                    "destination parameter is of the incorrect type (expected: %s, found: %s)", this.localIndex, this.argumentType, node.desc));
         }
-    }
-
-    public VarInsnNode createLoadInstruction(MethodNode methodNode) throws TransformerException {
-        this.validateLocalVariableTable(methodNode);
 
         return new VarInsnNode(this.getLoadOpcode(), this.localIndex);
     }

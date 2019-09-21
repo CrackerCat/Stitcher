@@ -51,7 +51,7 @@ public class TransformationReader {
         try {
             return this.readTransformations(resource, classNode);
         } catch (Exception e) {
-            throw new RuntimeException("Could not build class patcher from class " + resource.getPath(), e);
+            throw new RuntimeException(String.format("Could not build class patcher from class %s", resource.getPath()), e);
         }
     }
 

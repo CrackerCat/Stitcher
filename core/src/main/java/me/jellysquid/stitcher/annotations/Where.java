@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Where {
     At at();
 
-    MethodTarget[] method() default {};
+    Target[] method() default {};
 
     String varName() default "";
 
@@ -20,4 +20,36 @@ public @interface Where {
     int[] only() default { };
 
     int priority() default 0;
+
+    enum At {
+        /**
+         * See {@link me.jellysquid.stitcher.matchers.at.AtTail}.
+         */
+        TAIL,
+
+        /**
+         * See {@link me.jellysquid.stitcher.matchers.at.AtHead}
+         */
+        HEAD,
+
+        /**
+         * See {@link me.jellysquid.stitcher.matchers.at.AtConstant}
+         */
+        CONSTANT,
+
+        /**
+         * See {@link me.jellysquid.stitcher.matchers.at.AtInvoke}
+         */
+        INVOKE,
+
+        /**
+         * See {@link me.jellysquid.stitcher.matchers.at.AtVariable}
+         */
+        LOAD,
+
+        /**
+         * See {@link me.jellysquid.stitcher.matchers.at.AtVariable}
+         */
+        STORE
+    }
 }

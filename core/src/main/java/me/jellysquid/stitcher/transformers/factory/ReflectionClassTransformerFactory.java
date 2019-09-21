@@ -24,7 +24,7 @@ public class ReflectionClassTransformerFactory implements ClassTransformerFactor
                 throw new ReflectiveOperationException("Constructor is not accessible");
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("No suitable constructor found for " + type.getName(), e);
+            throw new RuntimeException(String.format("No suitable constructor found for %s", type.getName()), e);
         }
     }
 
@@ -33,7 +33,7 @@ public class ReflectionClassTransformerFactory implements ClassTransformerFactor
         try {
             return this.constructor.newInstance(source, method, annotation);
         } catch (ReflectiveOperationException e) {
-            throw new TransformerBuildException("Failed to instantiate class transformer for type " + this.type, e);
+            throw new TransformerBuildException(String.format("Failed to instantiate class transformer for type %s", this.type), e);
         }
     }
 }
